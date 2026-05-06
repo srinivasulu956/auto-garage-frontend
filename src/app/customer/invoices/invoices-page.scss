@@ -1,0 +1,529 @@
+.dashboard-page {
+	padding: 1.75rem;
+	background: var(--body-bg-color);
+	min-height: 100vh;
+}
+
+.inv-due-pill {
+	background: var(--primary-soft);
+	color: var(--primary-color);
+	padding: 0.25rem 0.75rem;
+	border-radius: 9999px;
+	font-size: 0.8rem;
+	font-weight: 500;
+}
+
+/* ── Alert ── */
+.inv-alert {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+	padding: 1rem 1.25rem;
+	background: var(--primary-soft);
+	border: 1px solid var(--border-color);
+	border-radius: 12px;
+	color: var(--text-color);
+	margin-bottom: 1.75rem;
+}
+
+/* ── Filters ── */
+.inv-filters {
+	display: flex;
+	gap: 0.5rem;
+	margin-bottom: 1.75rem;
+	flex-wrap: wrap;
+}
+
+.inv-filter-btn {
+	background: var(--surface-muted);
+	border: 1px solid var(--border-color);
+	padding: 0.5rem 1rem;
+	border-radius: 9999px;
+	font-size: 0.875rem;
+	font-weight: 500;
+	color: var(--text-color);
+	cursor: pointer;
+	transition: all 0.2s ease;
+
+	&--active {
+		background: var(--primary-color);
+		color: white;
+		border-color: var(--primary-color);
+	}
+}
+
+.inv-filter-count {
+	margin-left: 0.4rem;
+	font-size: 0.75rem;
+	padding: 0.1rem 0.45rem;
+	border-radius: 999px;
+	background-color: var(--border-color);
+	color: var(--primary-color);
+}
+
+/* ── Invoice Cards ── */
+.inv-list {
+	display: flex;
+	flex-direction: column;
+	gap: 1.25rem;
+}
+
+.inv-card {
+	background: var(--surface-color);
+	border: 1px solid var(--border-color);
+	border-radius: 16px;
+	padding: 1.5rem;
+	cursor: pointer;
+	transition: all 0.25s ease;
+	box-shadow: var(--panel-shadow);
+
+	&:hover {
+		transform: translateY(-4px);
+		box-shadow: var(--panel-shadow-hover);
+	}
+}
+
+.inv-card--paid {
+	border-left: 5px solid var(--primary-color);
+}
+
+.inv-card--unpaid {
+	border-left: 5px solid var(--accent-color);
+}
+
+.inv-card__top {
+	display: flex;
+	justify-content: space-between;
+	gap: 1.25rem;
+}
+
+.inv-card__info {
+	flex: 1;
+}
+
+.inv-card__service {
+	font-size: 1.08rem;
+	font-weight: 600;
+	color: var(--text-color);
+	margin-bottom: 0.35rem;
+}
+
+.inv-card__vehicle,
+.inv-card__date {
+	font-size: 0.875rem;
+	color: var(--muted-text-color);
+}
+
+.inv-card__right {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-end;
+	gap: 0.5rem;
+}
+
+.inv-card__amount {
+	font-size: 1.25rem;
+	font-weight: 700;
+	color: var(--heading-color);
+}
+
+.inv-card__footer {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-top: 1.25rem;
+	padding-top: 1.25rem;
+	border-top: 1px solid var(--border-color);
+}
+
+.inv-detail-btn {
+	background: none;
+	border: none;
+	color: var(--primary-color);
+	font-weight: 500;
+	cursor: pointer;
+}
+
+.inv-sm-btn {
+	padding: 0.45rem 0.85rem;
+	font-size: 0.83rem;
+	border-radius: 8px;
+}
+
+/* Status Badge */
+.inv-badge {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.4rem;
+	padding: 0.3rem 0.8rem;
+	border-radius: 9999px;
+	font-size: 0.8rem;
+	font-weight: 600;
+}
+
+.inv-badge__dot {
+	width: 7px;
+	height: 7px;
+	border-radius: 50%;
+}
+
+/* Skeleton */
+.inv-card--skeleton {
+	animation: pulse 1.5s infinite ease-in-out;
+}
+
+.sk {
+	background: var(--surface-muted);
+	border-radius: 6px;
+}
+
+@keyframes pulse {
+	0%,
+	100% {
+		opacity: 0.65;
+	}
+	50% {
+		opacity: 1;
+	}
+}
+
+/* Empty State */
+.empty-panel {
+	text-align: center;
+	padding: 4rem 2rem;
+	color: var(--muted-text-color);
+}
+
+.empty-panel-icon {
+	font-size: 3.5rem;
+	margin-bottom: 1rem;
+}
+
+/* ── Overlays ── */
+.inv-overlay {
+	position: fixed;
+	inset: 0;
+	background: rgba(0, 0, 0, 0.55);
+	backdrop-filter: blur(6px);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 1100;
+}
+
+/* ─────────────────────────────────────────
+   MODALS
+   ───────────────────────────────────────── */
+
+/* ── Pay Modal ── */
+.inv-modal {
+	background: var(--surface-color);
+	border-radius: 16px;
+	width: 420px;
+	max-width: 92vw;
+	box-shadow: var(--panel-shadow-hover);
+	border: 1px solid var(--border-color);
+	overflow: hidden;
+}
+
+.inv-modal__header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1.25rem 1.5rem;
+	border-bottom: 1px solid var(--border-color);
+
+	h3 {
+		margin: 0;
+		font-size: 1.25rem;
+		font-weight: 600;
+	}
+}
+
+.inv-modal__close {
+	border-radius: 20px;
+}
+
+.inv-modal__amount {
+	text-align: center;
+	padding: 1.25rem 1.5rem 0.5rem;
+
+	strong {
+		font-size: 1.45rem;
+		font-weight: 700;
+		color: var(--heading-color);
+		display: block;
+	}
+}
+
+.inv-method-grid {
+	display: flex;
+	gap: 0.75rem;
+	padding: 0 1.5rem;
+	margin-bottom: 1rem;
+}
+
+.inv-method-btn {
+	flex: 1;
+	padding: 0.65rem 0.75rem;
+	border: 1.5px solid var(--border-color);
+	background: var(--surface-muted);
+	border-radius: 10px;
+	cursor: pointer;
+	font-size: 0.9rem;
+	font-weight: 500;
+	transition: all 0.2s ease;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.35rem;
+
+	&--active {
+		border-color: var(--primary-color);
+		background: var(--primary-soft);
+		color: var(--primary-color);
+	}
+}
+
+.inv-modal__body {
+	padding: 0 1.5rem 1rem;
+}
+
+.inv-cash-note {
+	margin-top: 0.5rem;
+	padding: 0.75rem;
+	background: var(--surface-muted);
+	border-radius: 8px;
+	font-size: 0.875rem;
+	color: var(--muted-text-color);
+}
+
+.inv-modal__footer {
+	padding: 1rem 1.5rem 1.5rem;
+	border-top: 1px solid var(--border-color);
+	display: flex;
+	gap: 0.75rem;
+	justify-content: flex-end;
+}
+
+/* ── Detail Modal ── */
+.inv-detail-modal {
+	background: var(--surface-color);
+	border-radius: 18px;
+	width: 80%;
+	max-width: 820px;
+	max-height: 92vh;
+	overflow-y: auto;
+	box-shadow: var(--panel-shadow-hover);
+	border: 1px solid var(--border-color);
+	display: flex;
+	flex-direction: column;
+	/* ✅ FIX: isolate stacking context so no decorations bleed in from parent */
+	isolation: isolate;
+	position: relative;
+}
+
+.inv-detail__header {
+	display: flex;
+	justify-content: space-between;
+	align-items: flex-start;
+	padding: 1.75rem 2rem 1.25rem;
+	border-bottom: 1px solid var(--border-color);
+	flex-shrink: 0;
+}
+
+.inv-detail__header-right {
+	display: flex;
+	align-items: center;
+	gap: 20px;
+}
+
+.inv-detail__title {
+	font-size: 1.4rem;
+	font-weight: 700;
+	color: var(--heading-color);
+	margin: 0;
+}
+
+.inv-detail__subtitle {
+	color: var(--muted-text-color);
+	font-size: 0.9rem;
+	margin-top: 0.3rem;
+}
+
+.inv-detail__close {
+	background: none;
+	border: none;
+	font-size: 1.8rem;
+	color: var(--muted-text-color);
+	cursor: pointer;
+	padding: 0.25rem;
+}
+
+.inv-detail__content {
+	padding: 1.75rem 2rem;
+	flex: 1;
+	overflow-y: auto;
+}
+
+.inv-detail__section {
+	margin-bottom: 2rem;
+}
+
+.inv-detail__section-title {
+	font-size: 0.8rem;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.6px;
+	color: var(--muted-text-color);
+	margin-bottom: 0.9rem;
+}
+
+/* ✅ FIX: info-grid was using flex with gap causing labels and values to
+   appear side by side on the same line — switched to a proper 2-col grid */
+.inv-detail__info-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+	gap: 1.25rem;
+}
+
+/* ✅ FIX: info-item stacks label above value (column), not side by side */
+.inv-detail__info-item {
+	display: flex;
+	flex-direction: column;
+	gap: 3px;
+}
+
+.inv-detail__label {
+	font-size: 0.78rem;
+	color: var(--muted-text-color);
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+}
+
+.inv-detail__value {
+	font-weight: 600;
+	color: var(--text-color);
+	font-size: 0.95rem;
+}
+
+/* ✅ FIX: table wrapper clips overflow so nothing bleeds outside the table */
+.inv-items-table-wrapper {
+	width: 100%;
+	overflow-x: auto;
+	border-radius: 12px;
+	border: 1px solid var(--border-color);
+}
+
+/* ✅ FIX: removed border + border-radius from table itself since wrapper handles it */
+.inv-items-table {
+	width: 100%;
+	border-collapse: collapse;
+	background: var(--surface-color);
+
+	th {
+		background: var(--surface-muted);
+		padding: 0.9rem 1.25rem;
+		text-align: left;
+		font-weight: 500;
+		font-size: 0.82rem;
+		color: var(--muted-text-color);
+		text-transform: uppercase;
+		letter-spacing: 0.04em;
+	}
+
+	td {
+		padding: 0.9rem 1.25rem;
+		border-top: 1px solid var(--border-color);
+		font-size: 0.9rem;
+		color: var(--text-color);
+		/* ✅ FIX: no background on td — was inheriting stray background */
+		background: none;
+	}
+
+	/* Qty column */
+	th:nth-child(2),
+	td:nth-child(2) {
+		text-align: center;
+		width: 80px;
+	}
+
+	/* Unit Price + Total columns */
+	th:nth-child(3),
+	th:nth-child(4),
+	td:nth-child(3),
+	td:nth-child(4) {
+		text-align: right;
+	}
+}
+
+/* Totals */
+.inv-detail__totals {
+	background: var(--surface-muted);
+	padding: 1.25rem;
+	border-radius: 12px;
+	margin-top: 1.5rem;
+}
+
+.inv-detail__totals-row {
+	display: flex;
+	justify-content: space-between;
+	padding: 0.5rem 0;
+	font-size: 0.98rem;
+}
+
+.inv-detail__totals-row--total {
+	font-size: 1.35rem;
+	font-weight: 700;
+	color: var(--heading-color);
+	border-top: 2px solid var(--primary-color);
+	padding-top: 1rem;
+	margin-top: 0.5rem;
+}
+
+/* Paid Info */
+.inv-detail__paid-info {
+	margin: 1.75rem 0;
+	padding: 1.1rem 1.5rem;
+	background: #f0fdf4;
+	border-radius: 12px;
+	color: #166534;
+}
+
+/* Footer Actions */
+.inv-detail__footer {
+	padding: 1.5rem 2rem;
+	border-top: 1px solid var(--border-color);
+	display: flex;
+	gap: 1rem;
+	justify-content: flex-end;
+	flex-wrap: wrap;
+	flex-shrink: 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+	.dashboard-page {
+		padding: 1.25rem;
+	}
+
+	.inv-detail-modal {
+		width: 95%;
+		max-height: 95vh;
+	}
+
+	.inv-detail__header,
+	.inv-detail__content,
+	.inv-detail__footer {
+		padding-left: 1.25rem;
+		padding-right: 1.25rem;
+	}
+
+	.inv-detail__info-grid {
+		grid-template-columns: 1fr 1fr;
+	}
+
+	.inv-method-grid {
+		flex-wrap: wrap;
+	}
+}

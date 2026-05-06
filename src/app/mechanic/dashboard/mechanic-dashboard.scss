@@ -1,0 +1,241 @@
+/* ── Metric grid ────────────────────────────────────────────── */
+
+.mcd-metric-grid {
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+@media (max-width: 900px) {
+	.mcd-metric-grid {
+		grid-template-columns: repeat(2, 1fr);
+	}
+}
+
+@media (max-width: 480px) {
+	.mcd-metric-grid {
+		grid-template-columns: 1fr;
+	}
+}
+
+/* ── Metric card ────────────────────────────────────────────── */
+
+.mcd-metric {
+	display: flex;
+	align-items: center;
+	gap: 0.85rem;
+	transition:
+		transform 0.15s,
+		box-shadow 0.15s;
+
+	&--clickable {
+		cursor: pointer;
+		&:hover {
+			transform: translateY(-2px);
+			box-shadow: var(--panel-shadow);
+		}
+	}
+
+	&__icon {
+		font-size: 1.5rem;
+		width: 44px;
+		height: 44px;
+		border-radius: 0.65rem;
+		background: var(--primary-soft);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		flex-shrink: 0;
+	}
+
+	&__body {
+		display: flex;
+		flex-direction: column;
+		gap: 0.1rem;
+		flex: 1;
+		min-width: 0;
+	}
+
+	&__value {
+		font-size: 1.5rem;
+		font-weight: 800;
+		color: var(--heading-color);
+		line-height: 1.1;
+		text-align: center;
+	}
+
+	&__label {
+		font-size: 0.72rem;
+		font-weight: 700;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		color: var(--muted-text-color);
+		text-align: center;
+	}
+
+	&__arrow {
+		font-size: 1rem;
+		color: var(--muted-text-color);
+		flex-shrink: 0;
+	}
+}
+
+/* ── Panel ──────────────────────────────────────────────────── */
+
+.mcd-panel {
+	background: var(--surface-color);
+	border: 1px solid var(--border-color);
+	border-radius: 1rem;
+	box-shadow: var(--panel-shadow);
+	padding: 1.25rem 1.5rem;
+	color: var(--text-color);
+
+	&__header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 1rem;
+
+		h2 {
+			margin: 0;
+			font-size: 1rem;
+			font-weight: 700;
+			color: var(--heading-color);
+		}
+	}
+}
+
+.mcd-link-btn {
+	background: none;
+	border: none;
+	color: var(--primary-color);
+	font-size: 0.85rem;
+	font-weight: 600;
+	cursor: pointer;
+	padding: 0;
+	transition: opacity 0.15s;
+	&:hover {
+		opacity: 0.75;
+	}
+}
+
+/* ── Job rows ───────────────────────────────────────────────── */
+
+.mcd-job-list {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+}
+
+.mcd-job-row {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+	padding: 0.75rem 1rem;
+	border-radius: 0.65rem;
+	border: 1px solid var(--border-color);
+	background: var(--body-bg-color);
+	cursor: pointer;
+	transition:
+		background 0.15s,
+		box-shadow 0.15s;
+
+	&:hover {
+		background: var(--surface-muted, #f8fafc);
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+	}
+
+	&--skeleton {
+		pointer-events: none;
+		gap: 1rem;
+	}
+
+	&__info {
+		display: flex;
+		flex-direction: column;
+		flex: 1;
+		min-width: 0;
+		gap: 0.2rem;
+	}
+
+	&__service {
+		font-weight: 600;
+		font-size: 0.9rem;
+		color: var(--heading-color);
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+
+	&__vehicle {
+		font-size: 0.78rem;
+		color: var(--muted-text-color);
+	}
+
+	&__date {
+		font-size: 0.8rem;
+		color: var(--muted-text-color);
+		white-space: nowrap;
+		flex-shrink: 0;
+	}
+}
+
+/* ── Status badge ───────────────────────────────────────────── */
+
+.mcd-badge {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.35rem;
+	padding: 0.3rem 0.75rem;
+	border-radius: 1rem;
+	font-size: 0.72rem;
+	font-weight: 700;
+	white-space: nowrap;
+	flex-shrink: 0;
+
+	&__dot {
+		width: 6px;
+		height: 6px;
+		border-radius: 50%;
+		flex-shrink: 0;
+	}
+}
+
+/* ── Quick actions grid ─────────────────────────────────────── */
+
+.mcd-quick-grid {
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	gap: 1rem;
+
+	@media (max-width: 480px) {
+		grid-template-columns: 1fr;
+	}
+}
+
+.mcd-quick-card {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 0.6rem;
+	padding: 1.25rem 1rem;
+	border-radius: 1rem;
+	border: 1px solid var(--border-color);
+	background: var(--surface-color);
+	color: var(--text-color);
+	font-size: 0.88rem;
+	font-weight: 600;
+	cursor: pointer;
+	transition:
+		background 0.15s,
+		transform 0.15s,
+		box-shadow 0.15s;
+
+	&:hover {
+		background: var(--primary-soft);
+		transform: translateY(-2px);
+		box-shadow: var(--panel-shadow);
+	}
+
+	&__icon {
+		font-size: 1.8rem;
+	}
+}

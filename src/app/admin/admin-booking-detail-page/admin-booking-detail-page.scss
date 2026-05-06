@@ -1,0 +1,448 @@
+/* ─────────────────────────────────────────────
+   Page Layout
+───────────────────────────────────────────── */
+.abd-page {
+	padding: 1.5rem 2rem;
+	color: var(--text-color);
+	background: var(--body-bg-color);
+	min-height: 100%;
+}
+
+/* ─────────────────────────────────────────────
+   Header
+───────────────────────────────────────────── */
+.abd-header {
+	display: flex;
+	align-items: center;
+	gap: 1rem;
+	margin-bottom: 1.25rem;
+
+	&__title {
+		font-size: 1.4rem;
+		font-weight: 700;
+		color: var(--heading-color);
+	}
+}
+
+/* ─────────────────────────────────────────────
+   Layout Grid
+───────────────────────────────────────────── */
+.abd-layout {
+	display: grid;
+	grid-template-columns: 2fr 1fr;
+	gap: 1.25rem;
+
+	@media (max-width: 900px) {
+		grid-template-columns: 1fr;
+	}
+}
+
+/* ─────────────────────────────────────────────
+   Cards
+───────────────────────────────────────────── */
+.abd-card {
+	background: var(--surface-color);
+	border: 1px solid var(--border-color);
+	border-radius: 1rem;
+	padding: 1.25rem;
+	box-shadow: var(--panel-shadow);
+	transition: all 0.2s ease;
+
+	&:hover {
+		box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+	}
+}
+
+.abd-card__row {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 1rem;
+}
+
+.abd-card__heading {
+	font-size: 1.2rem;
+	font-weight: 700;
+	color: var(--heading-color);
+}
+
+/* ─────────────────────────────────────────────
+   Info Grid
+───────────────────────────────────────────── */
+.abd-info-grid {
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	gap: 1rem;
+	margin-top: 1rem;
+
+	@media (max-width: 600px) {
+		grid-template-columns: 1fr;
+	}
+}
+
+.abd-info-item {
+	display: flex;
+	flex-direction: column;
+	gap: 0.2rem;
+}
+
+.abd-info-label {
+	font-size: 0.7rem;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+	color: var(--muted-text-color);
+	font-weight: 600;
+}
+
+.abd-info-value {
+	font-size: 0.95rem;
+	font-weight: 600;
+	color: var(--heading-color);
+}
+
+.abd-info-sub {
+	font-size: 0.8rem;
+	color: var(--muted-text-color);
+}
+
+/* ─────────────────────────────────────────────
+   Status Badge
+───────────────────────────────────────────── */
+.abd-badge {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.4rem;
+	padding: 0.3rem 0.75rem;
+	border-radius: 999px;
+	font-size: 0.72rem;
+	font-weight: 700;
+
+	&__dot {
+		width: 6px;
+		height: 6px;
+		border-radius: 50%;
+	}
+}
+
+/* ─────────────────────────────────────────────
+   Notes
+───────────────────────────────────────────── */
+.abd-notes {
+	margin-top: 1rem;
+	padding: 0.75rem 1rem;
+	border-radius: 0.6rem;
+	background: var(--surface-muted, #f8fafc);
+
+	&__label {
+		font-size: 0.75rem;
+		font-weight: 600;
+		color: var(--muted-text-color);
+	}
+
+	&__text {
+		font-size: 0.85rem;
+		margin-top: 0.25rem;
+		color: var(--text-color);
+	}
+}
+
+/* ─────────────────────────────────────────────
+   Actions (MAIN FIX HERE)
+───────────────────────────────────────────── */
+.abd-actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.75rem;
+	margin-top: 1.25rem;
+}
+
+/* Button Base Override */
+.abd-actions .sd-btn {
+	padding: 0.6rem 1rem;
+	border-radius: 0.6rem;
+	font-size: 0.85rem;
+	font-weight: 600;
+	transition: all 0.2s ease;
+}
+
+/* Primary Action */
+.abd-actions .sd-btn--primary {
+	background: #2563eb;
+	border: none;
+	color: white;
+
+	&:hover {
+		background: #1d4ed8;
+		transform: translateY(-1px);
+	}
+}
+
+/* Success (Complete) */
+.abd-actions .sd-btn--success {
+	background: #16a34a;
+
+	&:hover {
+		background: #15803d;
+	}
+}
+
+/* Warning (Send Back) */
+.abd-actions .sd-btn--warning {
+	background: #f59e0b;
+
+	&:hover {
+		background: #d97706;
+	}
+}
+
+/* Danger / Reassign */
+.abd-actions .sd-btn--danger {
+	background: #7c3aed;
+
+	&:hover {
+		background: #6d28d9;
+	}
+}
+
+/* ─────────────────────────────────────────────
+   Progress Bar
+───────────────────────────────────────────── */
+.abd-progress {
+	height: 6px;
+	border-radius: 999px;
+	background: var(--border-color);
+	margin-bottom: 1rem;
+	overflow: hidden;
+
+	&__bar {
+		height: 100%;
+		background: linear-gradient(90deg, #22c55e, #16a34a);
+		transition: width 0.4s ease;
+	}
+}
+
+/* ─────────────────────────────────────────────
+   Timeline
+───────────────────────────────────────────── */
+.abd-timeline {
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+	margin-top: 0.75rem;
+}
+
+.abd-tl-item {
+	display: flex;
+	gap: 0.75rem;
+}
+
+.abd-tl-item__dot {
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+	margin-top: 5px;
+	flex-shrink: 0;
+}
+
+.abd-tl-item__body {
+	display: flex;
+	flex-direction: column;
+	gap: 0.15rem;
+}
+
+.abd-tl-item__label {
+	font-size: 0.85rem;
+	font-weight: 600;
+}
+
+.abd-tl-item__role {
+	font-size: 0.7rem;
+	color: var(--muted-text-color);
+}
+
+.abd-tl-item__notes {
+	font-size: 0.8rem;
+	color: var(--text-color);
+}
+
+.abd-tl-item__time {
+	font-size: 0.7rem;
+	color: var(--muted-text-color);
+}
+
+/* ─────────────────────────────────────────────
+   Info Banners
+───────────────────────────────────────────── */
+.abd-info-banner {
+	margin-top: 1rem;
+	padding: 0.75rem 1rem;
+	border-radius: 0.6rem;
+	font-size: 0.85rem;
+	font-weight: 600;
+
+	&--info {
+		background: #e0f2fe;
+		color: #0369a1;
+	}
+
+	&--success {
+		background: #dcfce7;
+		color: #15803d;
+	}
+}
+
+/* ─────────────────────────────────────────────
+   Loading
+───────────────────────────────────────────── */
+.abd-loading {
+	padding: 2rem;
+	text-align: center;
+	color: var(--muted-text-color);
+	font-size: 0.9rem;
+}
+
+// ─── Add these rules to the bottom of admin-booking-detail-page.scss ──────────
+
+// Invoice detail panel inside view-invoice drawer
+.inv-detail {
+	display: flex;
+	flex-direction: column;
+	gap: 1.25rem;
+
+	&__header {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 1rem 2rem;
+		padding-bottom: 1rem;
+		border-bottom: 1px solid var(--color-border-tertiary);
+	}
+
+	&__label {
+		font-size: 0.72rem;
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		color: var(--muted-text-color);
+		margin-bottom: 2px;
+	}
+
+	&__mono {
+		font-family: monospace;
+		font-size: 0.78rem;
+		word-break: break-all;
+		color: var(--color-text-secondary);
+	}
+
+	&__section {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+	}
+
+	&__section-title {
+		font-size: 0.72rem;
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		color: var(--muted-text-color);
+		padding-bottom: 4px;
+		border-bottom: 1px solid var(--color-border-tertiary);
+	}
+
+	&__row {
+		display: flex;
+		justify-content: space-between;
+		align-items: flex-start;
+		font-size: 0.875rem;
+		gap: 1rem;
+
+		span:first-child {
+			color: var(--color-text-secondary);
+			flex-shrink: 0;
+		}
+		span:last-child {
+			font-weight: 500;
+			text-align: right;
+		}
+
+		&--total {
+			span {
+				font-size: 1rem;
+				font-weight: 700;
+				color: var(--color-text-primary);
+			}
+		}
+	}
+
+	&__totals {
+		display: flex;
+		flex-direction: column;
+		gap: 0.4rem;
+		padding-top: 0.75rem;
+		border-top: 1px solid var(--color-border-tertiary);
+	}
+}
+
+// Line items table inside the view panel
+.inv-items-table {
+	display: flex;
+	flex-direction: column;
+	gap: 0;
+	border: 1px solid var(--color-border-tertiary);
+	border-radius: 6px;
+	overflow: hidden;
+	font-size: 0.8rem;
+
+	&__head,
+	&__row {
+		display: grid;
+		grid-template-columns: 1fr 40px 90px 90px;
+		gap: 8px;
+		padding: 7px 10px;
+		align-items: center;
+	}
+
+	&__head {
+		background: var(--color-background-secondary);
+		font-weight: 600;
+		font-size: 0.72rem;
+		text-transform: uppercase;
+		letter-spacing: 0.04em;
+		color: var(--muted-text-color);
+
+		span:not(:first-child) {
+			text-align: right;
+		}
+	}
+
+	&__row {
+		border-top: 1px solid var(--color-border-tertiary);
+		color: var(--color-text-primary);
+
+		span:not(:first-child) {
+			text-align: right;
+		}
+
+		&:last-child span:last-child {
+			font-weight: 600;
+		}
+	}
+}
+
+.inv-detail-loading {
+	padding: 2rem;
+	text-align: center;
+	color: var(--muted-text-color);
+	font-size: 0.875rem;
+}
+
+// Secondary button style (if not already in your global SCSS)
+.sd-btn--secondary {
+	background: var(--color-background-secondary);
+	color: var(--color-text-primary);
+	border: 1px solid var(--color-border-secondary);
+
+	&:hover {
+		background: var(--color-background-tertiary);
+	}
+}

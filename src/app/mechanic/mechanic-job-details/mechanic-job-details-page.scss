@@ -1,0 +1,406 @@
+/* ─────────────────────────────────────────────
+   Page Layout
+───────────────────────────────────────────── */
+.mjd-page {
+	display: flex;
+	flex-direction: column;
+	gap: 1.5rem;
+	color: var(--text-color);
+}
+
+/* ─────────────────────────────────────────────
+   Header
+───────────────────────────────────────────── */
+.mjd-header {
+	display: flex;
+	align-items: center;
+	gap: 1rem;
+
+	h1 {
+		font-size: 1.5rem;
+		font-weight: 700;
+		color: var(--heading-color);
+		margin: 0;
+	}
+}
+
+.mjd-back {
+	background: var(--surface-muted);
+	border: 1px solid var(--border-color);
+	padding: 0.4rem 0.9rem;
+	border-radius: 0.6rem;
+	cursor: pointer;
+	font-size: 0.85rem;
+	font-weight: 600;
+	transition: all 0.2s;
+
+	&:hover {
+		background: var(--surface-color);
+		box-shadow: var(--panel-shadow);
+	}
+}
+
+/* ─────────────────────────────────────────────
+   Info Card
+───────────────────────────────────────────── */
+.mjd-card {
+	background: var(--surface-color);
+	border: 1px solid var(--border-color);
+	border-radius: 0.9rem;
+	padding: 1.2rem;
+	box-shadow: var(--panel-shadow);
+
+	p {
+		margin: 0.4rem 0;
+		font-size: 0.9rem;
+	}
+}
+
+/* ─────────────────────────────────────────────
+   Status
+───────────────────────────────────────────── */
+.mjd-status {
+	display: inline-block;
+	padding: 0.25rem 0.7rem;
+	border-radius: 999px;
+	font-size: 0.75rem;
+	font-weight: 600;
+	background: #eef2ff;
+	color: #4338ca;
+}
+
+/* ─────────────────────────────────────────────
+   Actions Section
+───────────────────────────────────────────── */
+.mjd-actions {
+	background: var(--surface-color);
+	border: 1px solid var(--border-color);
+	border-radius: 0.9rem;
+	padding: 1.2rem;
+	box-shadow: var(--panel-shadow);
+
+	h3 {
+		margin-bottom: 0.8rem;
+		font-size: 1rem;
+		font-weight: 700;
+	}
+}
+
+/* ─────────────────────────────────────────────
+   Notes
+───────────────────────────────────────────── */
+.mjd-notes {
+	width: 100%;
+	min-height: 90px;
+	border: 1px solid var(--border-color);
+	border-radius: 0.7rem;
+	padding: 0.7rem;
+	font-size: 0.85rem;
+	background: var(--surface-muted);
+	color: var(--text-color);
+	margin-bottom: 0.9rem;
+	resize: vertical;
+
+	&:focus {
+		outline: none;
+		border-color: var(--primary-color);
+		box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
+	}
+}
+
+/* ─────────────────────────────────────────────
+   Buttons
+───────────────────────────────────────────── */
+.mjd-btn-grid {
+	display: flex;
+	gap: 0.7rem;
+	flex-wrap: wrap;
+
+	button {
+		flex: 1;
+		padding: 0.65rem;
+		border-radius: 0.7rem;
+		border: none;
+		font-size: 0.85rem;
+		font-weight: 600;
+		cursor: pointer;
+		transition: all 0.2s;
+
+		background: linear-gradient(135deg, #065f46, #047857);
+		color: white;
+
+		&:hover {
+			transform: translateY(-1px);
+			box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+		}
+
+		&:disabled {
+			opacity: 0.5;
+			cursor: not-allowed;
+			transform: none;
+			box-shadow: none;
+		}
+	}
+}
+
+/* ─────────────────────────────────────────────
+   History Section
+───────────────────────────────────────────── */
+.mjd-history {
+	display: flex;
+	flex-direction: column;
+	gap: 0.6rem;
+}
+
+.mjd-history-row {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 0.65rem 0.9rem;
+	border-radius: 0.7rem;
+	background: var(--surface-muted);
+	border: 1px solid var(--border-color);
+
+	strong {
+		font-size: 0.85rem;
+	}
+
+	p {
+		margin: 0;
+		font-size: 0.75rem;
+		color: var(--muted-text-color);
+	}
+}
+
+.mjd-empty {
+	text-align: center;
+	font-size: 0.85rem;
+	color: var(--muted-text-color);
+	padding: 1rem;
+}
+
+/* ─────────────────────────────────────────────
+   Loading
+───────────────────────────────────────────── */
+.mjd-loading {
+	text-align: center;
+	padding: 2rem;
+	color: var(--muted-text-color);
+}
+
+// ─── Add these rules to the bottom of mechanic-job-details-page.scss ──────────
+
+.mjd-worklog {
+	background: var(--surface-color);
+	border: 1px solid var(--border-color);
+	border-radius: 12px;
+	padding: 1.25rem;
+	margin-bottom: 1.5rem;
+
+	&__header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		margin-bottom: 0.4rem;
+	}
+
+	&__title {
+		font-size: 1rem;
+		font-weight: 600;
+		color: var(--color-text-primary);
+		margin: 0;
+	}
+
+	&__locked-badge {
+		font-size: 0.75rem;
+		color: var(--muted-text-color);
+		background: var(--color-background-secondary);
+		border: 1px solid var(--color-border-tertiary);
+		padding: 3px 10px;
+		border-radius: 99px;
+	}
+
+	&__add-btn {
+		font-size: 0.8rem;
+		font-weight: 600;
+		color: var(--primary-color);
+		background: transparent;
+		border: 1px dashed var(--primary-color);
+		padding: 4px 12px;
+		border-radius: 6px;
+		cursor: pointer;
+		transition: all 0.15s;
+
+		&:hover {
+			background: var(--primary-color-light, #eff6ff);
+		}
+	}
+
+	&__hint {
+		font-size: 0.8rem;
+		color: var(--muted-text-color);
+		margin-bottom: 1rem;
+	}
+
+	&__loading,
+	&__empty {
+		font-size: 0.875rem;
+		color: var(--muted-text-color);
+		padding: 1rem 0;
+		text-align: center;
+	}
+
+	&__form {
+		background: var(--color-background-secondary);
+		border: 1px solid var(--color-border-tertiary);
+		border-radius: 8px;
+		padding: 1rem;
+		margin-bottom: 1rem;
+		display: flex;
+		flex-direction: column;
+		gap: 0.75rem;
+	}
+
+	&__form-row {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 0.75rem;
+	}
+
+	&__form-actions {
+		display: flex;
+		justify-content: flex-end;
+		gap: 0.5rem;
+	}
+
+	// Items table
+	&__table {
+		border: 1px solid var(--color-border-tertiary);
+		border-radius: 8px;
+		overflow: hidden;
+		font-size: 0.85rem;
+		margin-bottom: 0.75rem;
+	}
+
+	&__table-head,
+	&__table-row {
+		display: grid;
+		grid-template-columns: 1fr 50px 100px 100px 36px;
+		align-items: center;
+		padding: 8px 12px;
+		gap: 8px;
+	}
+
+	&__table-head {
+		background: var(--color-background-secondary);
+		font-size: 0.72rem;
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.04em;
+		color: var(--muted-text-color);
+
+		span:nth-child(2),
+		span:nth-child(3),
+		span:nth-child(4) {
+			text-align: right;
+		}
+	}
+
+	&__table-row {
+		border-top: 1px solid var(--color-border-tertiary);
+
+		span:nth-child(2),
+		span:nth-child(3),
+		span:nth-child(4) {
+			text-align: right;
+		}
+	}
+
+	&__delete-btn {
+		background: transparent;
+		border: none;
+		color: var(--danger-color, #ef4444);
+		cursor: pointer;
+		font-size: 0.8rem;
+		padding: 4px;
+		border-radius: 4px;
+		line-height: 1;
+
+		&:hover {
+			background: #fef2f2;
+		}
+		&:disabled {
+			opacity: 0.4;
+			cursor: not-allowed;
+		}
+	}
+
+	&__total {
+		text-align: right;
+		font-size: 0.875rem;
+		color: var(--color-text-secondary);
+		padding-top: 0.5rem;
+		border-top: 1px solid var(--color-border-tertiary);
+	}
+}
+
+// Shared input/button styles for mechanic page (if not already in your SCSS)
+.mjd-input {
+	width: 100%;
+	padding: 8px 12px;
+	border: 1px solid var(--color-border-secondary);
+	border-radius: 6px;
+	background: var(--color-background-primary);
+	color: var(--color-text-primary);
+	font-size: 0.875rem;
+
+	&:focus {
+		outline: none;
+		border-color: var(--primary-color);
+	}
+}
+
+.mjd-label {
+	display: block;
+	font-size: 0.75rem;
+	font-weight: 600;
+	color: var(--muted-text-color);
+	margin-bottom: 4px;
+}
+
+.mjd-field {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+}
+
+.mjd-btn {
+	padding: 8px 16px;
+	border-radius: 6px;
+	font-size: 0.875rem;
+	font-weight: 500;
+	cursor: pointer;
+	border: none;
+	transition: all 0.15s;
+
+	&--primary {
+		background: var(--primary-color);
+		color: #fff;
+		&:hover {
+			opacity: 0.9;
+		}
+		&:disabled {
+			opacity: 0.5;
+			cursor: not-allowed;
+		}
+	}
+
+	&--ghost {
+		background: transparent;
+		color: var(--color-text-secondary);
+		border: 1px solid var(--color-border-secondary);
+		&:hover {
+			background: var(--color-background-secondary);
+		}
+	}
+}

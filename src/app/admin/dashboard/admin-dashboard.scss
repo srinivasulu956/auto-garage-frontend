@@ -1,0 +1,363 @@
+/* ── Metrics grid (5 cols) ───────────────────────────────── */
+
+.ad-metric-grid {
+	grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+@media (max-width: 1100px) {
+	.ad-metric-grid {
+		grid-template-columns: repeat(3, 1fr);
+	}
+}
+@media (max-width: 720px) {
+	.ad-metric-grid {
+		grid-template-columns: 1fr 1fr;
+	}
+}
+@media (max-width: 480px) {
+	.ad-metric-grid {
+		grid-template-columns: 1fr;
+	}
+}
+
+/* ── Metric card ────────────────────────────────────────── */
+
+.ad-metric {
+	display: flex;
+	align-items: center;
+	gap: 0.85rem;
+	transition:
+		transform 0.15s,
+		box-shadow 0.15s;
+
+	&--clickable {
+		cursor: pointer;
+		&:hover {
+			transform: translateY(-2px);
+			box-shadow: var(--panel-shadow);
+		}
+	}
+
+	&__icon {
+		font-size: 1.6rem;
+		width: 44px;
+		height: 44px;
+		border-radius: 0.65rem;
+		background: var(--primary-soft);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		flex-shrink: 0;
+		text-align: center;
+	}
+
+	&__body {
+		display: flex;
+		flex-direction: column;
+		gap: 0.1rem;
+		flex: 1;
+		min-width: 0;
+	}
+
+	&__value {
+		font-size: 1.5rem;
+		font-weight: 800;
+		color: var(--heading-color);
+		line-height: 1.1;
+		text-align: center;
+	}
+
+	&__label {
+		font-size: 0.72rem;
+		font-weight: 700;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		color: var(--muted-text-color);
+		text-align: center;
+	}
+
+	&__sub {
+		font-size: 0.75rem;
+		color: var(--muted-text-color);
+		text-align: center;
+	}
+
+	&__arrow {
+		font-size: 0.85rem;
+		color: var(--primary-color);
+		opacity: 0.6;
+		flex-shrink: 0;
+	}
+}
+
+/* ── Two-column body ────────────────────────────────────── */
+
+.ad-body {
+	display: grid;
+	grid-template-columns: 1fr 320px;
+	gap: 1.25rem;
+	align-items: start;
+}
+
+@media (max-width: 900px) {
+	.ad-body {
+		grid-template-columns: 1fr;
+	}
+}
+
+.ad-side {
+	display: flex;
+	flex-direction: column;
+	gap: 1.25rem;
+}
+
+/* ── Panel ──────────────────────────────────────────────── */
+
+.ad-panel {
+	background: var(--surface-color);
+	border: 1px solid var(--border-color);
+	border-radius: 0.85rem;
+	overflow: hidden;
+
+	&--accent {
+		border-color: #fcd34d;
+	}
+
+	&__header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		padding: 1rem 1.25rem;
+		border-bottom: 1px solid var(--border-color);
+	}
+
+	&__title {
+		font-size: 0.95rem;
+		font-weight: 700;
+		color: var(--heading-color);
+		margin: 0;
+	}
+
+	&__content {
+		display: flex;
+		flex-direction: column;
+	}
+}
+
+.ad-link {
+	background: none;
+	border: none;
+	color: var(--primary-color);
+	font-size: 0.83rem;
+	font-weight: 600;
+	cursor: pointer;
+	padding: 0;
+	&:hover {
+		opacity: 0.75;
+	}
+}
+
+.ad-live-dot {
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+	background: #f97316;
+	box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.25);
+	animation: pulse 1.8s infinite;
+}
+
+@keyframes pulse {
+	0%,
+	100% {
+		box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.25);
+	}
+	50% {
+		box-shadow: 0 0 0 6px rgba(249, 115, 22, 0.1);
+	}
+}
+
+/* ── Booking rows ───────────────────────────────────────── */
+
+.ad-row {
+	display: flex;
+	align-items: center;
+	gap: 0.85rem;
+	padding: 0.85rem 1.25rem;
+	border-bottom: 1px solid var(--border-color);
+	cursor: pointer;
+	transition: background 0.12s;
+
+	&:last-child {
+		border-bottom: none;
+	}
+	&:hover {
+		background: var(--surface-muted);
+	}
+
+	&--skeleton {
+		pointer-events: none;
+		gap: 1.25rem;
+	}
+
+	&__info {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		gap: 0.15rem;
+		min-width: 0;
+	}
+	&__primary {
+		font-size: 0.88rem;
+		font-weight: 600;
+		color: var(--heading-color);
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+	&__secondary {
+		font-size: 0.75rem;
+		color: var(--muted-text-color);
+	}
+	&__date {
+		font-size: 0.75rem;
+		color: var(--muted-text-color);
+		white-space: nowrap;
+	}
+}
+
+/* ── Action rows (side panel) ───────────────────────────── */
+
+.ad-action-row {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.75rem;
+	padding: 0.75rem 1.25rem;
+	border-bottom: 1px solid var(--border-color);
+	cursor: pointer;
+	transition: background 0.12s;
+
+	&:last-child {
+		border-bottom: none;
+	}
+	&:hover {
+		background: var(--surface-muted);
+	}
+
+	&__info {
+		display: flex;
+		flex-direction: column;
+		gap: 0.1rem;
+		min-width: 0;
+	}
+	&__service {
+		font-size: 0.83rem;
+		font-weight: 600;
+		color: var(--heading-color);
+	}
+	&__customer {
+		font-size: 0.73rem;
+		color: var(--muted-text-color);
+	}
+}
+
+/* ── Revenue snapshot ───────────────────────────────────── */
+
+.ad-revenue {
+	padding: 1rem 1.25rem;
+	display: flex;
+	flex-direction: column;
+	gap: 0.6rem;
+
+	&__row {
+		display: flex;
+		justify-content: space-between;
+		font-size: 0.85rem;
+		color: var(--text-color);
+
+		strong {
+			font-weight: 700;
+			color: var(--heading-color);
+		}
+	}
+
+	&__paid {
+		color: #15803d !important;
+	}
+	&__pending {
+		color: #854d0e !important;
+	}
+
+	&__bar-wrap {
+		margin-top: 0.35rem;
+		display: flex;
+		flex-direction: column;
+		gap: 0.35rem;
+	}
+
+	&__bar-track {
+		height: 6px;
+		background: var(--border-color);
+		border-radius: 99px;
+		overflow: hidden;
+	}
+
+	&__bar-fill {
+		height: 100%;
+		background: #22c55e;
+		border-radius: 99px;
+		transition: width 0.6s ease;
+	}
+
+	&__bar-label {
+		font-size: 0.72rem;
+		color: var(--muted-text-color);
+	}
+}
+
+/* ── Empty inline ───────────────────────────────────────── */
+
+.ad-empty-inline {
+	padding: 2rem;
+	text-align: center;
+	font-size: 0.88rem;
+	color: var(--muted-text-color);
+}
+
+/* ── Badge ──────────────────────────────────────────────── */
+
+.ad-badge {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.3rem;
+	padding: 0.2rem 0.6rem;
+	border-radius: 1rem;
+	font-size: 0.72rem;
+	font-weight: 600;
+	white-space: nowrap;
+	flex-shrink: 0;
+
+	&__dot {
+		width: 6px;
+		height: 6px;
+		border-radius: 50%;
+	}
+}
+
+/* ── Skeleton ───────────────────────────────────────────── */
+
+.sk {
+	background: linear-gradient(90deg, var(--surface-muted) 25%, var(--border-color) 50%, var(--surface-muted) 75%);
+	background-size: 200% 100%;
+	animation: shimmer 1.4s infinite;
+	border-radius: 0.4rem;
+}
+
+@keyframes shimmer {
+	0% {
+		background-position: 200% 0;
+	}
+	100% {
+		background-position: -200% 0;
+	}
+}

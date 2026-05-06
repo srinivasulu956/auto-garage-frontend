@@ -1,0 +1,257 @@
+.cd-cta {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
+	padding: 0.65rem 1.4rem;
+	background: var(--primary-color);
+	color: var(--sidenav-text);
+	border: none;
+	border-radius: 0.6rem;
+	font-size: 0.9rem;
+	font-weight: 600;
+	cursor: pointer;
+	transition:
+		background 0.2s,
+		transform 0.15s;
+	white-space: nowrap;
+
+	&:hover {
+		opacity: 0.9;
+		transform: translateY(-1px);
+	}
+
+	&--sm {
+		padding: 0.5rem 1rem;
+		font-size: 0.82rem;
+		flex-shrink: 0;
+	}
+}
+
+.page-hero {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	flex-wrap: wrap;
+	gap: 1rem;
+}
+
+// ── Metric ──────────────────────────────────────────────────
+
+.cd-metric {
+	display: flex;
+	align-items: center;
+	gap: 1rem;
+
+	&--clickable {
+		cursor: pointer;
+
+		&:hover {
+			box-shadow: var(--panel-shadow);
+			transform: translateY(-2px);
+		}
+	}
+}
+
+.cd-metric__icon {
+	font-size: 1.8rem;
+	width: 52px;
+	height: 52px;
+	border-radius: 0.75rem;
+	background: var(--primary-soft);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+}
+
+.cd-metric__body {
+	display: flex;
+	flex-direction: column;
+}
+
+.cd-metric__label {
+	font-size: 0.8rem;
+	color: var(--muted-text-color);
+	font-weight: 500;
+	text-align: center;
+}
+
+.cd-metric__value {
+	font-size: 1.6rem;
+	font-weight: 800;
+	color: var(--heading-color);
+	line-height: 1.2;
+	text-align: center;
+}
+
+.cd-metric__sub {
+	font-size: 0.75rem;
+	color: var(--muted-text-color);
+	text-align: center;
+}
+
+// ── Section ──────────────────────────────────────────────────
+
+.cd-section {
+	flex: auto;
+}
+
+.cd-section__header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 1rem;
+}
+
+.cd-section__title {
+	font-size: 1rem;
+	font-weight: 700;
+	color: var(--heading-color);
+	margin: 0;
+}
+
+.cd-link {
+	background: none;
+	border: none;
+	color: var(--primary-color);
+	font-size: 0.85rem;
+	font-weight: 600;
+	cursor: pointer;
+	padding: 0;
+
+	&:hover {
+		opacity: 0.8;
+	}
+}
+
+// ── Bookings List ────────────────────────────────────────────
+
+.cd-bookings-list {
+	background: var(--surface-color);
+	border: 1px solid var(--border-color);
+	border-radius: 0.75rem;
+	overflow: hidden;
+}
+
+.cd-booking-row {
+	display: flex;
+	align-items: center;
+	gap: 1rem;
+	padding: 1rem 1.25rem;
+	border-bottom: 1px solid var(--border-color);
+	cursor: pointer;
+	transition: background 0.15s;
+
+	&:last-child {
+		border-bottom: none;
+	}
+
+	&:hover {
+		background: var(--surface-muted);
+	}
+
+	&--skeleton {
+		pointer-events: none;
+		gap: 1.5rem;
+	}
+}
+
+.cd-booking-row__info {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	gap: 0.2rem;
+	min-width: 0;
+}
+
+.cd-booking-row__service {
+	font-size: 0.9rem;
+	font-weight: 600;
+	color: var(--heading-color);
+}
+
+.cd-booking-row__vehicle {
+	font-size: 0.78rem;
+	color: var(--muted-text-color);
+}
+
+.cd-booking-row__date {
+	font-size: 0.8rem;
+	color: var(--muted-text-color);
+	white-space: nowrap;
+}
+
+// ── Badge ────────────────────────────────────────────────────
+
+.cd-badge {
+	padding: 0.25rem 0.65rem;
+	border-radius: 1rem;
+	font-size: 0.75rem;
+	font-weight: 600;
+	white-space: nowrap;
+}
+
+// ── Empty / Alert ─────────────────────────────────────────────
+
+.cd-empty {
+	padding: 2rem;
+	text-align: center;
+	color: var(--muted-text-color);
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 0.5rem;
+	font-size: 0.9rem;
+
+	span {
+		font-size: 2rem;
+	}
+}
+
+.cd-alert {
+	background: var(--primary-soft);
+	border: 1px solid var(--border-color);
+	border-radius: 0.75rem;
+	padding: 1.25rem;
+	display: flex;
+	align-items: center;
+	gap: 1rem;
+
+	span {
+		font-size: 1.75rem;
+		flex-shrink: 0;
+	}
+
+	div {
+		flex: 1;
+
+		strong {
+			display: block;
+			font-size: 0.9rem;
+			color: var(--heading-color);
+			margin-bottom: 0.2rem;
+		}
+
+		p {
+			font-size: 0.82rem;
+			color: var(--muted-text-color);
+			margin: 0;
+		}
+	}
+}
+
+.sk-box {
+	background: linear-gradient(90deg, var(--surface-muted) 25%, var(--border-color) 50%, var(--surface-muted) 75%);
+	background-size: 200% 100%;
+	animation: shimmer 1.4s infinite;
+	border-radius: 0.4rem;
+}
+
+@keyframes shimmer {
+	0% {
+		background-position: 200% 0;
+	}
+	100% {
+		background-position: -200% 0;
+	}
+}

@@ -1,0 +1,178 @@
+/* ── Filters ────────────────────────────────────────────── */
+
+.abp-filters {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+	margin: 1.25rem 0;
+}
+
+.abp-filter-btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.4rem;
+	padding: 0.45rem 0.9rem;
+	background: var(--surface-color);
+	border: 1px solid var(--border-color);
+	border-radius: 2rem;
+	font-size: 0.83rem;
+	font-weight: 500;
+	color: var(--muted-text-color);
+	cursor: pointer;
+	transition: all 0.15s;
+
+	&--active {
+		background: var(--primary-color);
+		color: var(--sidenav-text);
+		border-color: var(--primary-color);
+		font-weight: 600;
+	}
+
+	&:hover:not(&--active) {
+		border-color: var(--primary-color);
+		color: var(--text-color);
+	}
+}
+
+.abp-filter-count {
+	background: rgba(0, 0, 0, 0.12);
+	border-radius: 99px;
+	padding: 0.05rem 0.45rem;
+	font-size: 0.72rem;
+	font-weight: 700;
+}
+
+.abp-filter-btn--active .abp-filter-count {
+	background: rgba(255, 255, 255, 0.25);
+}
+
+/* ── List ───────────────────────────────────────────────── */
+
+.abp-list {
+	display: flex;
+	flex-direction: column;
+	gap: 0.85rem;
+}
+
+/* ── Card ───────────────────────────────────────────────── */
+
+.abp-card {
+	background: var(--surface-color);
+	border: 1px solid var(--border-color);
+	border-radius: 0.85rem;
+	padding: 1.1rem 1.25rem;
+	cursor: pointer;
+	transition:
+		box-shadow 0.18s,
+		transform 0.18s;
+
+	&:hover {
+		box-shadow: var(--panel-shadow);
+		transform: translateY(-2px);
+	}
+
+	&--skeleton {
+		pointer-events: none;
+	}
+
+	&__top {
+		display: flex;
+		align-items: flex-start;
+		justify-content: space-between;
+		gap: 1rem;
+		margin-bottom: 0.6rem;
+	}
+
+	&__info {
+		flex: 1;
+		min-width: 0;
+	}
+
+	&__service {
+		font-size: 1rem;
+		font-weight: 700;
+		color: var(--heading-color);
+		margin: 0 0 0.2rem;
+	}
+
+	&__customer,
+	&__vehicle {
+		font-size: 0.8rem;
+		color: var(--muted-text-color);
+		margin: 0 0 0.15rem;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+
+	&__meta {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.75rem;
+		font-size: 0.8rem;
+		color: var(--muted-text-color);
+		margin-bottom: 0.75rem;
+	}
+
+	&__footer {
+		display: flex;
+		justify-content: flex-end;
+		border-top: 1px solid var(--border-color);
+		padding-top: 0.65rem;
+		margin-top: 0.25rem;
+	}
+}
+
+/* ── Badge ──────────────────────────────────────────────── */
+
+.abp-badge {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.35rem;
+	padding: 0.25rem 0.65rem;
+	border-radius: 1rem;
+	font-size: 0.75rem;
+	font-weight: 600;
+	white-space: nowrap;
+	flex-shrink: 0;
+
+	&__dot {
+		width: 7px;
+		height: 7px;
+		border-radius: 50%;
+	}
+}
+
+/* ── Buttons ────────────────────────────────────────────── */
+
+.abp-view-btn {
+	background: none;
+	border: none;
+	color: var(--primary-color);
+	font-size: 0.85rem;
+	font-weight: 600;
+	cursor: pointer;
+	padding: 0;
+
+	&:hover {
+		opacity: 0.75;
+	}
+}
+
+/* ── Skeleton ───────────────────────────────────────────── */
+
+.sk {
+	background: linear-gradient(90deg, var(--surface-muted) 25%, var(--border-color) 50%, var(--surface-muted) 75%);
+	background-size: 200% 100%;
+	animation: shimmer 1.4s infinite;
+	border-radius: 0.4rem;
+}
+
+@keyframes shimmer {
+	0% {
+		background-position: 200% 0;
+	}
+	100% {
+		background-position: -200% 0;
+	}
+}

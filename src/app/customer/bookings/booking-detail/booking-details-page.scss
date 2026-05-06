@@ -1,0 +1,161 @@
+.bd-page {
+	padding: 1.5rem;
+}
+
+.bd-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 1.5rem;
+}
+
+.bd-card {
+	background: var(--surface-color);
+	padding: 1.5rem;
+	border-radius: 1rem;
+	box-shadow: var(--panel-shadow);
+	position: relative;
+}
+
+.bd-status {
+	position: absolute;
+	top: 1rem;
+	right: 1rem;
+	padding: 0.3rem 0.6rem;
+	border-radius: 0.4rem;
+	font-size: 0.75rem;
+	font-weight: 600;
+	text-transform: capitalize;
+}
+
+.bd-status--pending {
+	background: #fff7ed;
+	color: #c2410c;
+}
+
+.bd-status--confirmed {
+	background: #eff6ff;
+	color: #1d4ed8;
+}
+
+.bd-status--assignedtomechanic {
+	background: #f0f9ff;
+	color: #0369a1;
+}
+
+.bd-status--inprogress {
+	background: #fefce8;
+	color: #a16207;
+}
+
+.bd-status--waitingforparts {
+	background: #fdf4ff;
+	color: #7e22ce;
+}
+
+.bd-status--qualitycheck {
+	background: #fff7ed;
+	color: #c2410c;
+}
+
+.bd-status--completed {
+	background: #f0fdf4;
+	color: #15803d;
+}
+
+.bd-status--invoicegenerated {
+	background: #fefce8;
+	color: #854d0e;
+}
+
+.bd-status--paid {
+	background: #f0fdf4;
+	color: #15803d;
+}
+
+.bd-status--cancelled {
+	background: #fef2f2;
+	color: #991b1b;
+}
+.bd-status--unknown {
+	background: #e5e7eb;
+	color: #374151;
+}
+
+.bd-grid {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 1rem;
+	margin: 1rem 0;
+}
+
+.bd-notes {
+	margin-top: 1rem;
+	color: var(--muted-text-color);
+}
+
+.bd-actions {
+	display: flex;
+	gap: 1rem;
+	margin-top: 1.5rem;
+}
+
+.bd-form {
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+}
+
+.bd-form select,
+.bd-form input,
+.bd-form textarea {
+	padding: 0.6rem;
+	border-radius: 0.5rem;
+	border: 1px solid var(--border-color);
+}
+
+.bd-form-actions {
+	display: flex;
+	justify-content: flex-end;
+	gap: 1rem;
+	margin-top: 1rem;
+}
+
+/* MODAL */
+
+.bd-modal-overlay {
+	position: fixed;
+	inset: 0;
+	background: rgba(0, 0, 0, 0.5);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 500;
+}
+
+.bd-modal {
+	background: var(--surface-color);
+	padding: 2rem;
+	border-radius: 1rem;
+	width: 100%;
+	max-width: 360px;
+	text-align: center;
+}
+
+.bd-modal-actions {
+	display: flex;
+	justify-content: center;
+	gap: 1rem;
+	margin-top: 1rem;
+}
+
+// ─── Append to the bottom of booking-details-page.scss ───────────────────────
+
+// Status row — badge + action button side by side, cleanly separated
+.bd-status-row {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	flex-wrap: wrap;
+	margin-bottom: 1rem;
+}

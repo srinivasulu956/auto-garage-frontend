@@ -1,0 +1,159 @@
+.mj-page {
+	display: flex;
+	flex-direction: column;
+	gap: 1.5rem;
+}
+
+.mj-list {
+	display: flex;
+	flex-direction: column;
+	gap: 0.75rem;
+}
+
+.mj-card {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1rem;
+	border-radius: 0.8rem;
+	border: 1px solid var(--border-color);
+	background: var(--surface-color);
+	cursor: pointer;
+	transition: 0.2s;
+
+	&:hover {
+		box-shadow: var(--panel-shadow);
+		transform: translateY(-2px);
+	}
+}
+
+.mj-left {
+	display: flex;
+	flex-direction: column;
+	gap: 0.25rem;
+
+	h3 {
+		margin: 0;
+		font-size: 0.95rem;
+	}
+
+	p {
+		margin: 0;
+		font-size: 0.8rem;
+		color: var(--muted-text-color);
+	}
+
+	span {
+		font-size: 0.75rem;
+		color: var(--muted-text-color);
+	}
+}
+
+.mj-status {
+	padding: 0.35rem 0.8rem;
+	border-radius: 999px;
+	font-size: 0.75rem;
+	font-weight: 600;
+}
+
+.mj-empty {
+	text-align: center;
+	color: var(--muted-text-color);
+}
+
+// ─── Append to the bottom of mechanic-jobs-page.scss ─────────────────────────
+
+// Filter tabs
+.mj-filters {
+	display: flex;
+	gap: 8px;
+	flex-wrap: wrap;
+	margin-bottom: 1.25rem;
+}
+
+.mj-filter-btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	padding: 6px 14px;
+	border-radius: 99px;
+	border: 1px solid var(--color-border-secondary);
+	background: var(--color-background-primary);
+	color: var(--color-text-secondary);
+	font-size: 0.8rem;
+	font-weight: 500;
+	cursor: pointer;
+	transition: all 0.15s;
+
+	&:hover {
+		border-color: var(--primary-color);
+		color: var(--primary-color);
+	}
+
+	&--active {
+		background: var(--primary-color);
+		border-color: var(--primary-color);
+		color: #fff;
+	}
+}
+
+.mj-filter-count {
+	font-size: 0.72rem;
+	font-weight: 600;
+	background: rgba(0, 0, 0, 0.12);
+	padding: 1px 6px;
+	border-radius: 99px;
+
+	.mj-filter-btn--active & {
+		background: rgba(255, 255, 255, 0.25);
+		color: #fff;
+	}
+}
+
+// Status badge with dot
+.mj-status {
+	display: inline-flex;
+	align-items: center;
+	gap: 5px;
+	font-size: 0.75rem;
+	font-weight: 600;
+	padding: 4px 10px;
+	border-radius: 99px;
+	white-space: nowrap;
+	flex-shrink: 0;
+
+	&__dot {
+		width: 6px;
+		height: 6px;
+		border-radius: 50%;
+		flex-shrink: 0;
+	}
+}
+
+// Date label inside card
+.mj-date {
+	font-size: 0.78rem;
+	color: var(--color-text-secondary);
+}
+
+// Skeleton card
+.mj-card--skeleton {
+	pointer-events: none;
+	opacity: 0.6;
+
+	.sk-box {
+		background: var(--color-background-secondary);
+		border-radius: 4px;
+		animation: skeleton-pulse 1.4s ease-in-out infinite;
+	}
+}
+
+@keyframes skeleton-pulse {
+	0%,
+	100% {
+		opacity: 1;
+	}
+	50% {
+		opacity: 0.5;
+	}
+}

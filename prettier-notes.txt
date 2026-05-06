@@ -1,0 +1,11 @@
+semi → adds semicolons
+singleQuote → uses ' instead of "
+trailingComma → adds commas in objects/arrays
+bracketSpacing → adds space inside {}
+printWidth → max line length
+tabWidth → indentation size
+useTabs → use tabs instead of spaces
+
+
+open settings and search for format , then select on save format and explore 
+remaining settings , for these we need to install prettier extension (Prettier Code Formater)

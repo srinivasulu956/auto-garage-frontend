@@ -1,0 +1,363 @@
+/* ─── Layout ───────────────────────────────────────────── */
+
+.nb-card {
+	background: var(--surface-color);
+	border: 1px solid var(--border-color);
+	border-radius: 1rem;
+	padding: 1.5rem;
+	margin-top: 1.5rem;
+	box-shadow: var(--panel-shadow);
+}
+
+/* ─── Step Indicator ───────────────────────────────────── */
+
+.nb-steps {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin: 1.5rem 0;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+}
+
+.nb-step {
+	display: flex;
+	align-items: center;
+	position: relative;
+	gap: 0.5rem;
+	flex: 1;
+	min-width: 120px;
+}
+
+.nb-step__circle {
+	width: 32px;
+	height: 32px;
+	border-radius: 50%;
+	border: 2px solid var(--border-color);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 0.85rem;
+	font-weight: 600;
+	background: var(--surface-muted);
+}
+
+.nb-step--active .nb-step__circle {
+	border-color: var(--primary-color);
+	background: var(--primary-color);
+	color: #fff;
+}
+
+.nb-step--done .nb-step__circle {
+	background: var(--success-color, #10b981);
+	color: #fff;
+	border-color: var(--success-color, #10b981);
+}
+
+.nb-step__label {
+	font-size: 0.8rem;
+	color: var(--muted-text-color);
+}
+
+.nb-step--active .nb-step__label {
+	color: var(--text-color);
+	font-weight: 600;
+}
+
+.nb-step__line {
+	flex: 1;
+	height: 2px;
+	background: var(--border-color);
+	margin-left: 0.5rem;
+}
+
+/* ─── Step Body ────────────────────────────────────────── */
+
+.nb-step-body {
+	display: flex;
+	flex-direction: column;
+	gap: 1.25rem;
+}
+
+.nb-step-hint {
+	font-size: 0.9rem;
+	color: var(--muted-text-color);
+}
+
+/* ─── Options Grid ─────────────────────────────────────── */
+
+.nb-option-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+	gap: 1rem;
+}
+
+/* ─── Option Card ─────────────────────────────────────── */
+
+.nb-option {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+	padding: 0.9rem;
+	border: 1px solid var(--border-color);
+	border-radius: 0.75rem;
+	cursor: pointer;
+	background: var(--surface-color);
+	transition: all 0.2s;
+}
+
+.nb-option:hover {
+	border-color: var(--primary-color);
+	background: var(--primary-soft);
+}
+
+.nb-option--selected {
+	border-color: var(--primary-color);
+	background: var(--primary-soft);
+	box-shadow: 0 0 0 2px var(--primary-soft);
+}
+
+.nb-option__icon {
+	font-size: 1.6rem;
+	background: var(--surface-muted);
+	width: 44px;
+	height: 44px;
+	border-radius: 0.6rem;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.nb-option__icon--service {
+	font-size: 1.4rem;
+}
+
+.nb-option__body {
+	display: flex;
+	flex-direction: column;
+	gap: 0.2rem;
+	font-size: 0.85rem;
+}
+
+.nb-option__body strong {
+	font-size: 0.95rem;
+	color: var(--text-color);
+}
+
+.nb-option__body span {
+	color: var(--muted-text-color);
+}
+
+.nb-option__check {
+	margin-left: auto;
+	color: var(--primary-color);
+	font-weight: bold;
+}
+
+/* ─── Tags ─────────────────────────────────────────────── */
+
+.nb-option__tags {
+	display: flex;
+	gap: 0.4rem;
+	margin-top: 0.25rem;
+}
+
+.nb-tag {
+	background: var(--surface-muted);
+	padding: 0.15rem 0.5rem;
+	border-radius: 0.4rem;
+	font-size: 0.75rem;
+	font-weight: 600;
+}
+
+/* ─── Loading / Empty ─────────────────────────────────── */
+
+.nb-loading {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 2rem;
+}
+
+.nb-spinner {
+	width: 28px;
+	height: 28px;
+	border: 3px solid var(--border-color);
+	border-top-color: var(--primary-color);
+	border-radius: 50%;
+	animation: spin 0.6s linear infinite;
+}
+
+.nb-empty {
+	text-align: center;
+	padding: 2rem;
+	color: var(--muted-text-color);
+}
+
+.nb-empty span {
+	font-size: 2rem;
+	display: block;
+	margin-bottom: 0.5rem;
+}
+
+/* ─── Schedule ─────────────────────────────────────────── */
+
+.nb-textarea {
+	resize: none;
+}
+
+/* ─── Confirm Card ─────────────────────────────────────── */
+
+.nb-confirm-card {
+	background: var(--surface-muted);
+	padding: 1.2rem;
+	border-radius: 0.75rem;
+	display: flex;
+	flex-direction: column;
+	gap: 0.6rem;
+}
+
+.nb-confirm-row {
+	display: flex;
+	justify-content: space-between;
+	font-size: 0.85rem;
+}
+
+.nb-confirm-label {
+	color: var(--muted-text-color);
+}
+
+.nb-confirm-value {
+	font-weight: 600;
+	color: var(--text-color);
+	text-align: right;
+}
+
+.nb-confirm-value--muted {
+	font-weight: 400;
+	color: var(--muted-text-color);
+}
+
+.nb-confirm-row--notes {
+	align-items: flex-start;
+}
+
+.nb-divider {
+	border: none;
+	border-top: 1px solid var(--border-color);
+	margin: 0.5rem 0;
+}
+
+/* ─── Notice ───────────────────────────────────────────── */
+
+.nb-notice {
+	margin-top: 1rem;
+	padding: 0.75rem;
+	border-radius: 0.5rem;
+	background: var(--primary-soft);
+	font-size: 0.8rem;
+	color: var(--text-color);
+}
+
+/* ─── Navigation ───────────────────────────────────────── */
+
+.nb-nav {
+	display: flex;
+	justify-content: space-between;
+	margin-top: 1.5rem;
+	gap: 0.75rem;
+}
+
+/* ─── Success Screen ───────────────────────────────────── */
+
+.nb-success {
+	text-align: center;
+	padding: 3rem 1rem;
+}
+
+.nb-success__icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.nb-success h2 {
+	margin-bottom: 0.5rem;
+}
+
+.nb-success p {
+	color: var(--muted-text-color);
+	margin-bottom: 1.5rem;
+}
+
+.nb-success__actions {
+	display: flex;
+	justify-content: center;
+	gap: 1rem;
+	flex-wrap: wrap;
+}
+
+// ─── Add these rules to the bottom of new-booking-page.scss ───────────────────
+
+// Disabled / busy vehicle card
+.nb-option--disabled {
+	opacity: 0.55;
+	cursor: not-allowed;
+	pointer-events: none; // prevents click
+	border-color: var(--color-border-tertiary) !important;
+	background: var(--color-background-secondary) !important;
+
+	&:hover {
+		transform: none;
+		box-shadow: none;
+	}
+}
+
+// "In Service" status badge inside the card
+.nb-option__status {
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+	font-size: 0.72rem;
+	font-weight: 600;
+	padding: 3px 9px;
+	border-radius: 99px;
+	white-space: nowrap;
+	margin-left: auto;
+	flex-shrink: 0;
+
+	&--busy {
+		background: #fff7ed;
+		color: #c2410c;
+		border: 1px solid #fed7aa;
+	}
+}
+
+// Warning banner when all vehicles are busy
+.nb-alert {
+	padding: 0.75rem 1rem;
+	border-radius: 8px;
+	font-size: 0.875rem;
+	margin-bottom: 1rem;
+	line-height: 1.5;
+
+	&--warning {
+		background: #fff7ed;
+		color: #92400e;
+		border: 1px solid #fed7aa;
+	}
+}
+
+// Small hint text below the grid
+.nb-hint-text {
+	font-size: 0.8rem;
+	color: var(--muted-text-color);
+	margin-top: 0.75rem;
+	text-align: center;
+}
+/* ─── Animations ───────────────────────────────────────── */
+
+@keyframes spin {
+	to {
+		transform: rotate(360deg);
+	}
+}

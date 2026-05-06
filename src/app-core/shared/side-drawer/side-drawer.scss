@@ -1,0 +1,224 @@
+/* ── Overlay ─────────────────────────────────────────────── */
+
+.sd-overlay {
+	position: fixed;
+	inset: 0;
+	background: rgba(0, 0, 0, 0.45);
+	z-index: 200;
+	opacity: 0;
+	pointer-events: none;
+	transition: opacity 0.25s ease;
+}
+
+.sd-overlay--visible {
+	opacity: 1;
+	pointer-events: auto;
+}
+
+/* ── Drawer ──────────────────────────────────────────────── */
+
+.sd-drawer {
+	position: fixed;
+	top: 0;
+	right: 0;
+	height: 100%;
+	width: 100%;
+	max-width: 460px;
+	background: var(--surface-color);
+	border-left: 1px solid var(--border-color);
+	box-shadow: -8px 0 32px rgba(0, 0, 0, 0.12);
+	z-index: 201;
+	overflow-y: auto;
+	display: flex;
+	flex-direction: column;
+
+	/* slide-in via CSS transform — no JS animation needed */
+	transform: translateX(100%);
+	transition: transform 0.25s ease;
+}
+
+.sd-drawer--open {
+	transform: translateX(0);
+}
+
+/* ── Header ──────────────────────────────────────────────── */
+
+.sd-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 1.25rem 1.5rem;
+	border-bottom: 1px solid var(--border-color);
+	background: var(--sidenav-bg);
+	color: var(--sidenav-text);
+	position: sticky;
+	top: 0;
+	z-index: 1;
+	flex-shrink: 0;
+}
+
+.sd-header__title {
+	font-size: 1.05rem;
+	font-weight: 700;
+	margin: 0;
+	color: var(--sidenav-text);
+}
+
+.sd-header__close {
+	background: none;
+	border: none;
+	font-size: 1.1rem;
+	cursor: pointer;
+	color: var(--sidenav-text);
+	width: 32px;
+	height: 32px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 0.4rem;
+	transition: background 0.15s;
+	flex-shrink: 0;
+}
+
+.sd-header__close:hover:not(:disabled) {
+	background: var(--sidenav-hover, rgba(255, 255, 255, 0.12));
+}
+
+.sd-header__close:disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+
+/* ── Body ────────────────────────────────────────────────── */
+
+.sd-body {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	overflow-y: auto;
+}
+
+/* ── Shared form primitives used inside any drawer ──────── */
+
+.sd-form {
+	padding: 1.5rem;
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+	flex: 1;
+}
+
+.sd-footer {
+	padding: 1rem 1.5rem;
+	border-top: 1px solid var(--border-color);
+	display: flex;
+	gap: 0.75rem;
+	justify-content: flex-end;
+	position: sticky;
+	bottom: 0;
+	background: var(--surface-color);
+	flex-shrink: 0;
+}
+
+.sd-row {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 1rem;
+}
+
+.sd-field {
+	display: flex;
+	flex-direction: column;
+	gap: 0.35rem;
+}
+
+.sd-label {
+	font-size: 0.85rem;
+	font-weight: 600;
+	color: var(--text-color);
+
+	span {
+		color: var(--danger-color);
+		margin-left: 2px;
+	}
+}
+
+.sd-input {
+	padding: 0.6rem 0.85rem;
+	border: 1px solid var(--border-color);
+	border-radius: 0.5rem;
+	font-size: 0.9rem;
+	color: var(--text-color);
+	background: var(--input-bg);
+	outline: none;
+	width: 100%;
+	box-sizing: border-box;
+	transition:
+		border-color 0.15s,
+		box-shadow 0.15s;
+
+	&:focus {
+		border-color: var(--primary-color);
+		box-shadow: 0 0 0 3px var(--primary-soft);
+	}
+
+	&.sd-input--error {
+		border-color: var(--danger-color);
+	}
+
+	&.sd-input--error:focus {
+		box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
+	}
+}
+
+.sd-error {
+	font-size: 0.78rem;
+	color: var(--danger-color);
+}
+
+/* ── Buttons ─────────────────────────────────────────────── */
+
+.sd-btn {
+	padding: 0.6rem 1.25rem;
+	border-radius: 0.5rem;
+	font-size: 0.88rem;
+	font-weight: 600;
+	cursor: pointer;
+	border: none;
+	display: inline-flex;
+	align-items: center;
+	gap: 0.4rem;
+	transition: all 0.15s;
+
+	&:disabled {
+		opacity: 0.6;
+		cursor: not-allowed;
+	}
+}
+
+.sd-btn--primary {
+	background: var(--primary-color);
+	color: var(--sidenav-text);
+
+	&:hover:not(:disabled) {
+		background: var(--sidenav-bg);
+	}
+}
+
+.sd-btn--ghost {
+	background: var(--surface-muted);
+	color: var(--text-color);
+
+	&:hover:not(:disabled) {
+		background: var(--border-color);
+	}
+}
+
+.sd-btn--danger {
+	background: var(--danger-color);
+	color: #fff;
+
+	&:hover:not(:disabled) {
+		filter: brightness(0.9);
+	}
+}

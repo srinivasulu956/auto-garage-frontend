@@ -1,0 +1,297 @@
+/* ── Hero button ────────────────────────────────────────── */
+
+.sp-add-btn {
+	display: inline-flex;
+	align-items: center;
+	padding: 0.65rem 1.4rem;
+	background: var(--primary-color);
+	color: var(--sidenav-text);
+	border: none;
+	border-radius: 0.6rem;
+	font-size: 0.9rem;
+	font-weight: 600;
+	cursor: pointer;
+	white-space: nowrap;
+	transition:
+		background 0.2s,
+		transform 0.15s;
+	&:hover {
+		background: var(--sidenav-bg);
+		transform: translateY(-1px);
+	}
+}
+
+/* ── Toolbar ────────────────────────────────────────────── */
+
+.sp-toolbar {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 0.75rem;
+}
+
+.sp-search {
+	flex: 1;
+	min-width: 180px;
+	padding: 0.55rem 0.9rem;
+	border: 1px solid var(--border-color);
+	border-radius: 0.5rem;
+	font-size: 0.88rem;
+	background: var(--input-bg);
+	color: var(--text-color);
+	outline: none;
+	&:focus {
+		border-color: var(--primary-color);
+		box-shadow: 0 0 0 3px var(--primary-soft);
+	}
+}
+
+.sp-filters {
+	display: flex;
+	gap: 0.4rem;
+	flex-wrap: wrap;
+}
+
+.sp-filter-btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.35rem;
+	padding: 0.4rem 0.85rem;
+	background: var(--surface-color);
+	border: 1px solid var(--border-color);
+	border-radius: 2rem;
+	font-size: 0.82rem;
+	font-weight: 500;
+	color: var(--muted-text-color);
+	cursor: pointer;
+	transition: all 0.15s;
+
+	&--active {
+		background: var(--primary-color);
+		color: var(--sidenav-text);
+		border-color: var(--primary-color);
+		font-weight: 600;
+	}
+
+	&:hover:not(&--active) {
+		border-color: var(--primary-color);
+		color: var(--text-color);
+	}
+}
+
+.sp-filter-count {
+	background: rgba(0, 0, 0, 0.12);
+	border-radius: 99px;
+	padding: 0.05rem 0.4rem;
+	font-size: 0.7rem;
+	font-weight: 700;
+}
+
+.sp-filter-btn--active .sp-filter-count {
+	background: rgba(255, 255, 255, 0.25);
+}
+
+/* ── Staff grid ─────────────────────────────────────────── */
+
+.sp-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+	gap: 1rem;
+}
+
+/* ── Staff card ─────────────────────────────────────────── */
+
+.sp-card {
+	background: var(--surface-color);
+	border: 1px solid var(--border-color);
+	border-radius: 1rem;
+	padding: 1.25rem;
+	display: flex;
+	flex-direction: column;
+	gap: 0.75rem;
+	transition:
+		box-shadow 0.18s,
+		transform 0.18s;
+
+	&:hover {
+		box-shadow: var(--panel-shadow);
+		transform: translateY(-2px);
+	}
+
+	&--inactive {
+		opacity: 0.65;
+		border-style: dashed;
+	}
+
+	&--skeleton {
+		pointer-events: none;
+	}
+
+	&__avatar {
+		width: 44px;
+		height: 44px;
+		border-radius: 50%;
+		background: var(--primary-soft);
+		color: var(--primary-color);
+		font-size: 1.1rem;
+		font-weight: 800;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		flex-shrink: 0;
+	}
+
+	&__info {
+		flex: 1;
+	}
+
+	&__name {
+		font-size: 0.95rem;
+		font-weight: 700;
+		color: var(--heading-color);
+		margin: 0 0 0.2rem;
+	}
+
+	&__email,
+	&__jobs {
+		font-size: 0.78rem;
+		color: var(--muted-text-color);
+		margin: 0;
+	}
+
+	&__meta {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		flex-wrap: wrap;
+	}
+
+	&__footer {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		border-top: 1px solid var(--border-color);
+		padding-top: 0.75rem;
+	}
+
+	&__date {
+		font-size: 0.75rem;
+		color: var(--muted-text-color);
+	}
+}
+
+/* ── Role badge ─────────────────────────────────────────── */
+
+.sp-role-badge {
+	display: inline-block;
+	padding: 0.18rem 0.6rem;
+	border-radius: 99px;
+	font-size: 0.72rem;
+	font-weight: 700;
+}
+
+/* ── Status chip ────────────────────────────────────────── */
+
+.sp-status {
+	font-size: 0.72rem;
+	font-weight: 600;
+	padding: 0.18rem 0.6rem;
+	border-radius: 99px;
+
+	&--active {
+		background: #dcfce7;
+		color: #15803d;
+	}
+	&--inactive {
+		background: #fef2f2;
+		color: #991b1b;
+	}
+}
+
+/* ── Activate button variant ────────────────────────────── */
+
+.sp-btn--activate {
+	background: #10b981;
+	color: #fff;
+	border: none;
+	&:hover:not(:disabled) {
+		background: #059669;
+	}
+	&:disabled {
+		opacity: 0.6;
+		cursor: not-allowed;
+	}
+}
+
+/* ── Confirm modal ──────────────────────────────────────── */
+
+.sp-overlay {
+	position: fixed;
+	inset: 0;
+	background: rgba(0, 0, 0, 0.5);
+	z-index: 300;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	animation: fadeIn 0.18s ease;
+}
+
+.sp-modal {
+	background: var(--surface-color);
+	border-radius: 1rem;
+	padding: 2rem;
+	width: min(90%, 360px);
+	box-shadow: var(--panel-shadow);
+	text-align: center;
+
+	&__message {
+		font-size: 0.95rem;
+		color: var(--text-color);
+		margin: 0 0 1.5rem;
+		line-height: 1.55;
+	}
+
+	&__actions {
+		display: flex;
+		gap: 0.75rem;
+		justify-content: center;
+	}
+}
+
+.sd-btn--self {
+	background: var(--surface-muted);
+	color: var(--primary-color);
+	border: 1px solid var(--primary-color);
+	cursor: not-allowed;
+	opacity: 0.85;
+	font-weight: 600;
+}
+
+@keyframes fadeIn {
+	from {
+		opacity: 0;
+		transform: scale(0.97);
+	}
+	to {
+		opacity: 1;
+		transform: scale(1);
+	}
+}
+
+/* ── Skeleton ───────────────────────────────────────────── */
+
+.sk {
+	background: linear-gradient(90deg, var(--surface-muted) 25%, var(--border-color) 50%, var(--surface-muted) 75%);
+	background-size: 200% 100%;
+	animation: shimmer 1.4s infinite;
+	border-radius: 0.4rem;
+}
+
+@keyframes shimmer {
+	0% {
+		background-position: 200% 0;
+	}
+	100% {
+		background-position: -200% 0;
+	}
+}

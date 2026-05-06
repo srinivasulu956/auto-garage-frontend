@@ -1,0 +1,138 @@
+.main-layout-wrapper {
+	position: relative;
+	display: flex;
+	width: 100%;
+	height: 100dvh;
+	min-height: 100vh;
+	flex-direction: column;
+	overflow: hidden;
+	background: var(--body-bg-color);
+	color: var(--text-color);
+}
+
+.main-layout-header-wrapper {
+	position: relative;
+	z-index: 40;
+	display: flex;
+	flex-shrink: 0;
+	align-items: center;
+	padding: 10px 22px;
+	border-bottom: 1px solid var(--border-color);
+	background: var(--header-bg);
+	backdrop-filter: blur(14px);
+	box-shadow: 0 10px 28px rgba(19, 35, 43, 0.06);
+}
+
+.layout-body {
+	display: flex;
+	min-height: 0;
+	flex: 1;
+	width: 100%;
+	overflow: visible;
+}
+
+.side-navbar-wrapper {
+	position: relative;
+	z-index: 35;
+	width: 72px;
+	flex: 0 0 72px;
+	overflow: visible;
+	transition:
+		width 0.22s ease,
+		flex-basis 0.22s ease;
+}
+
+.main-content-wrapper {
+	display: flex;
+	min-width: 0;
+	flex: 1;
+	flex-direction: column;
+	overflow: hidden;
+}
+
+.main-content-header {
+	display: flex;
+	min-height: 50px;
+	flex-shrink: 0;
+	align-items: center;
+	justify-content: space-between;
+	padding: 0 26px;
+	border-bottom: 1px solid var(--border-color);
+	background: var(--surface-muted);
+	color: var(--muted-text-color);
+	font-size: 13px;
+	font-weight: 800;
+	letter-spacing: 0;
+	text-transform: uppercase;
+}
+
+.content-wrapper {
+	flex: 1;
+	min-width: 0;
+	overflow: auto;
+	padding: 26px;
+	background: var(--content-gradient), var(--body-bg-color);
+}
+
+.main-layout-wrapper.layout-expanded {
+	.side-navbar-wrapper {
+		width: 260px;
+		flex-basis: 260px;
+	}
+}
+
+@media (max-width: 760px) {
+	.main-layout-header-wrapper {
+		min-height: 58px;
+		padding: 0 14px;
+	}
+
+	.side-navbar-wrapper,
+	.main-layout-wrapper.layout-expanded .side-navbar-wrapper {
+		width: 68px;
+		flex-basis: 68px;
+	}
+
+	.main-content-header {
+		min-height: 50px;
+		padding: 0 18px;
+	}
+
+	.content-wrapper {
+		padding: 18px;
+	}
+}
+
+@media (max-width: 520px) {
+	.main-layout-header-wrapper {
+		min-height: 54px;
+		padding: 0 10px;
+	}
+
+	.side-navbar-wrapper,
+	.main-layout-wrapper.layout-expanded .side-navbar-wrapper {
+		width: 60px;
+		flex-basis: 60px;
+	}
+
+	.main-content-header {
+		min-height: 44px;
+		padding: 0 12px;
+		font-size: 11px;
+	}
+
+	.content-wrapper {
+		padding: 12px;
+	}
+}
+
+@media (max-width: 340px) {
+	.side-navbar-wrapper,
+	.main-layout-wrapper.layout-expanded .side-navbar-wrapper {
+		display: none;
+	}
+
+	.content-wrapper {
+		padding: 10px;
+	}
+}
