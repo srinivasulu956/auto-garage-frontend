@@ -1,81 +1,17 @@
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { logoutUser } from '../../app-core/actions/auth-actions';
-import { setAuthInitialized, setLoggedUserData, setThemeData } from '../../app-core/reducers/common-slice';
-import ThemeToggler from '../../app-core/shared/theme-toggler/theme-toggler';
-import './login-page.scss';
+import { logoutUser } from '../../../app-core/actions/auth-actions';
+import { setAuthInitialized, setLoggedUserData, setThemeData } from '../../../app-core/reducers/common-slice';
+import FormAlert from '../../../app-core/shared/form-alert/form-alert';
+import ThemeToggler from '../../../app-core/shared/theme-toggler/theme-toggler';
+import { LOGIN_ROLES, TOKEN_KEY } from '../constants/authConstants';
+import { loginRequest, registerCustomerRequest } from '../services/authService';
+import { getAccessToken, getUserRoles, parseErrorResponse } from '../utils/authResponse';
+import { getLoginError, getRegisterError } from '../utils/authValidation';
+import '../styles/LoginPage.scss';
 
-const BASE_URL = import.meta.env.VITE_AUTH_BASE_URL;
-const TOKEN_KEY = 'ag_access_token'; // must match api-client.js and auth-actions.js
-
-const LOGIN_ROLES = ['Customer', 'Mechanic', 'Admin'];
-
-const friendlyErrorMessages = {
-	'Invalid email or password': 'The email or password is incorrect. Please check both and try again.',
-	'User is inactive. Please contact support.': 'This account is inactive. Please contact support to restore access.',
-	'User does not have the required role': 'This account is not assigned to the selected role.',
-	'No refresh token found.': 'Your session has expired. Please sign in again.',
-	'Invalid refresh token.': 'Your session is no longer valid. Please sign in again.',
-	'Refresh token has been revoked.': 'You have been signed out. Please sign in again.',
-	'Refresh token expired. Please login again.': 'Your session has expired. Please sign in again.',
-	'User with this email already exists.': 'An account with this email already exists. Please sign in instead.',
-	'Email is required.': 'Please enter your email address.',
-	'Password is required.': 'Please enter your password.',
-	'Request body is required.': 'Please fill in the form and try again.',
-	'Only customers can self-register. Contact your administrator for other roles.':
-		'Only customers can register here. Contact your administrator to create staff accounts.',
-};
-
-const parseErrorResponse = async (response) => {
-	const contentType = response.headers.get('content-type') ?? '';
-	let message = '';
-
-	try {
-		if (!contentType.includes('application/json')) {
-			message = await response.text();
-		} else {
-			const data = await response.json();
-			if (Array.isArray(data)) {
-				message = data.join('\n');
-			} else if (data?.message && data?.invalidRoles) {
-				message = `${data.message}: ${data.invalidRoles.join(', ')}`;
-			} else if (data?.errors) {
-				message = Object.values(data.errors).flat().join('\n');
-			} else {
-				message = data?.error || data?.message || data?.title || '';
-			}
-		}
-	} catch {
-		message = '';
-	}
-
-	const trimmed = message?.trim() || `Something went wrong (${response.status})`;
-	return friendlyErrorMessages[trimmed] || trimmed;
-};
-
-const validateEmail = (email) => /\S+@\S+\.\S+/.test(email);
-const getAccessToken = (data) => data?.accessToken ?? data?.AccessToken;
-const getUserRoles = (user) => user?.roles ?? user?.Roles ?? [];
-
-const getLoginError = ({ email, password }) => {
-	if (!email.trim()) return 'Please enter your email address.';
-	if (!validateEmail(email.trim())) return 'Please enter a valid email address.';
-	if (!password) return 'Please enter your password.';
-	return '';
-};
-
-const getRegisterError = ({ firstName, lastName, email, password }) => {
-	if (!firstName.trim()) return 'Please enter your first name.';
-	if (!lastName.trim()) return 'Please enter your last name.';
-	if (!email.trim()) return 'Please enter your email address.';
-	if (!validateEmail(email.trim())) return 'Please enter a valid email address.';
-	if (!password) return 'Please enter your password.';
-	if (password.length < 8) return 'Password must be at least 8 characters.';
-	return '';
-};
-
-const Login = () => {
+const LoginPage = () => {
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
 
@@ -120,15 +56,10 @@ const Login = () => {
 
 		setLoading(true);
 		try {
-			const response = await fetch(`${BASE_URL}/login`, {
-				method: 'POST',
-				credentials: 'include',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({
-					email: loginForm.email.trim(),
-					password: loginForm.password,
-					role: loginForm.role,
-				}),
+			const response = await loginRequest({
+				email: loginForm.email.trim(),
+				password: loginForm.password,
+				role: loginForm.role,
 			});
 
 			if (!response.ok) {
@@ -173,16 +104,11 @@ const Login = () => {
 
 		setLoading(true);
 		try {
-			const response = await fetch(`${BASE_URL}/register`, {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({
-					firstName: registerForm.firstName.trim(),
-					lastName: registerForm.lastName.trim(),
-					email: registerForm.email.trim(),
-					password: registerForm.password,
-					roles: ['Customer'],
-				}),
+			const response = await registerCustomerRequest({
+				firstName: registerForm.firstName.trim(),
+				lastName: registerForm.lastName.trim(),
+				email: registerForm.email.trim(),
+				password: registerForm.password,
 			});
 
 			if (!response.ok) {
@@ -280,13 +206,7 @@ const Login = () => {
 							</div>
 						</div>
 
-						{error && (
-							<div className="error" role="alert">
-								{error.split('\n').map((line, i) => (
-									<div key={i}>{line}</div>
-								))}
-							</div>
-						)}
+						<FormAlert className="error" message={error} role="alert" />
 
 						<button type="submit" className="submit-button" disabled={loading}>
 							{loading ? 'Signing in...' : 'Sign in'}
@@ -368,13 +288,7 @@ const Login = () => {
 							<span>To create Admin or Mechanic accounts, contact your administrator.</span>
 						</div>
 
-						{error && (
-							<div className="error" role="alert">
-								{error.split('\n').map((line, i) => (
-									<div key={i}>{line}</div>
-								))}
-							</div>
-						)}
+						<FormAlert className="error" message={error} role="alert" />
 
 						<button type="submit" className="submit-button" disabled={loading}>
 							{loading ? 'Creating account...' : 'Create account'}
@@ -404,4 +318,4 @@ const Login = () => {
 	);
 };
 
-export default Login;
+export default LoginPage;
