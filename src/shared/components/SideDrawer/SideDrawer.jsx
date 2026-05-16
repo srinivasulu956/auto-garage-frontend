@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import './side-drawer.scss';
+import './SideDrawer.scss';
 
 /**
  * SideDrawer — reusable right-side panel with backdrop.

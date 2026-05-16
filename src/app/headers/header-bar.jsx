@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom'; // 👈 add this
 import { logoutUser } from '../../app-core/actions/auth-actions';
-import ThemeToggler from '../../app-core/shared/theme-toggler/theme-toggler';
+import ThemeToggler from '../../shared/components/ThemeToggler/ThemeToggler';
 import './header-bar.scss';
 
 const HeaderBar = () => {

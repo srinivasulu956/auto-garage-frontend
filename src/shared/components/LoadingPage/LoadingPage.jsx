@@ -1,4 +1,4 @@
-import './loading-page.scss';
+import './LoadingPage.scss';
 import logo from '../../../../public/autofixlogo.png';
 
 const LoadingPage = () => {
