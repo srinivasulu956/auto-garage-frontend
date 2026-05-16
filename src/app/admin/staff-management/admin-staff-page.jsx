@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { adminStaffService } from '../../../app-core/services/admin-user-service';
 import { toastError, toastSuccess } from '../../../app-core/services/toast-service';
-import SideDrawer from '../../../app-core/shared/side-drawer/side-drawer';
+import SideDrawer from '../../../shared/components/SideDrawer/SideDrawer';
 import './admin-staff-page.scss';
 import { useSelector } from 'react-redux';
 
