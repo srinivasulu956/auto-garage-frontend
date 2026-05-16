@@ -1,31 +1,21 @@
 import { logoutUser } from '../actions/auth-actions';
 import store from '../reducers/store';
+import { AUTH_TOKEN_KEY, defaultApiHeaders, withAuthRequestDefaults } from './auth-request';
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-const defaultHeaders = {
-	'Content-Type': 'application/json',
-	'ngrok-skip-browser-warning': 'true',
-};
-
 let refreshPromise = null;
 
-const TOKEN_KEY = 'ag_access_token';
-
-export const getStoredToken = () => localStorage.getItem(TOKEN_KEY);
+export const getStoredToken = () => localStorage.getItem(AUTH_TOKEN_KEY);
 export const setStoredToken = (token) => {
-	if (token) localStorage.setItem(TOKEN_KEY, token);
+	if (token) localStorage.setItem(AUTH_TOKEN_KEY, token);
 };
-export const clearStoredToken = () => localStorage.removeItem(TOKEN_KEY);
+export const clearStoredToken = () => localStorage.removeItem(AUTH_TOKEN_KEY);
 
 const clearSession = () => {
 	clearStoredToken();
 	store.dispatch(logoutUser());
 };
-
-// ─────────────────────────────────────────
-// Helpers
-// ─────────────────────────────────────────
 
 const parseErrorMessage = async (response) => {
 	const contentType = response.headers.get('content-type') ?? '';
@@ -49,17 +39,9 @@ const handleResponse = async (response) => {
 	return response.json();
 };
 
-// ─────────────────────────────────────────
-// Refresh Logic
-// ─────────────────────────────────────────
-
 const refreshAccessToken = async () => {
 	try {
-		const response = await fetch(`${BASE_URL}/Auth/refresh`, {
-			method: 'POST',
-			credentials: 'include',
-			headers: { ...defaultHeaders }, // ✅ fixed: ngrok header included
-		});
+		const response = await fetch(`${BASE_URL}/Auth/refresh`, withAuthRequestDefaults({ method: 'POST' }));
 
 		if (!response.ok) {
 			clearSession();
@@ -82,7 +64,6 @@ const refreshAccessToken = async () => {
 	}
 };
 
-// De-duplicate parallel 401s — only one refresh call goes to backend
 const getRefreshedToken = async () => {
 	if (!refreshPromise) {
 		refreshPromise = refreshAccessToken().finally(() => {
@@ -92,24 +73,16 @@ const getRefreshedToken = async () => {
 	return refreshPromise;
 };
 
-// ─────────────────────────────────────────
-// HTTP Request Sender
-// ─────────────────────────────────────────
-
 const sendRequest = (url, options, token) =>
 	fetch(`${BASE_URL}${url}`, {
 		credentials: 'include',
 		...options,
 		headers: {
-			...defaultHeaders,
+			...defaultApiHeaders,
 			...(token && { Authorization: `Bearer ${token}` }),
 			...options.headers,
 		},
 	});
-
-// ─────────────────────────────────────────
-// Main Request Wrapper
-// ─────────────────────────────────────────
 
 const request = async (url, options = {}, retried = false) => {
 	const token = getStoredToken();
@@ -144,10 +117,6 @@ const request = async (url, options = {}, retried = false) => {
 
 	return handleResponse(response);
 };
-
-// ─────────────────────────────────────────
-// API Methods
-// ─────────────────────────────────────────
 
 const api = {
 	get: (url) => request(url, { method: 'GET' }),

@@ -3,11 +3,11 @@ import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { logoutUser } from '../../app-core/actions/auth-actions';
 import { setAuthInitialized, setLoggedUserData, setThemeData } from '../../app-core/reducers/common-slice';
+import { AUTH_TOKEN_KEY, withAuthRequestDefaults } from '../../app-core/services/auth-request';
 import ThemeToggler from '../../app-core/shared/theme-toggler/theme-toggler';
 import './login-page.scss';
 
 const BASE_URL = import.meta.env.VITE_AUTH_BASE_URL;
-const TOKEN_KEY = 'ag_access_token'; // must match api-client.js and auth-actions.js
 
 const LOGIN_ROLES = ['Customer', 'Mechanic', 'Admin'];
 
@@ -120,16 +120,14 @@ const Login = () => {
 
 		setLoading(true);
 		try {
-			const response = await fetch(`${BASE_URL}/login`, {
+			const response = await fetch(`${BASE_URL}/login`, withAuthRequestDefaults({
 				method: 'POST',
-				credentials: 'include',
-				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
 					email: loginForm.email.trim(),
 					password: loginForm.password,
 					role: loginForm.role,
 				}),
-			});
+			}));
 
 			if (!response.ok) {
 				setError(await parseErrorResponse(response));
@@ -148,7 +146,7 @@ const Login = () => {
 			}
 
 			// ── Store in localStorage (persists across tabs + browser restarts) ──
-			localStorage.setItem(TOKEN_KEY, accessToken);
+			localStorage.setItem(AUTH_TOKEN_KEY, accessToken);
 			dispatch(setLoggedUserData({ role, user }));
 			dispatch(setThemeData(user.theme));
 			dispatch(setAuthInitialized());
@@ -173,9 +171,8 @@ const Login = () => {
 
 		setLoading(true);
 		try {
-			const response = await fetch(`${BASE_URL}/register`, {
+			const response = await fetch(`${BASE_URL}/register`, withAuthRequestDefaults({
 				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
 					firstName: registerForm.firstName.trim(),
 					lastName: registerForm.lastName.trim(),
@@ -183,7 +180,7 @@ const Login = () => {
 					password: registerForm.password,
 					roles: ['Customer'],
 				}),
-			});
+			}));
 
 			if (!response.ok) {
 				setError(await parseErrorResponse(response));

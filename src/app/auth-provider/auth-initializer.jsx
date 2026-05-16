@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { logoutUser } from '../../app-core/actions/auth-actions';
 import { setAuthInitialized, setLoggedUserData, setThemeData } from '../../app-core/reducers/common-slice';
 import { getStoredToken, setStoredToken } from '../../app-core/services/api-client';
+import { withAuthRequestDefaults } from '../../app-core/services/auth-request';
 import LoadingPage from '../../app-core/shared/loading-page/loading-page';
 
 const BASE_URL = import.meta.env.VITE_AUTH_BASE_URL;
@@ -10,14 +11,12 @@ const BASE_URL = import.meta.env.VITE_AUTH_BASE_URL;
 // ── Fetch current user data with a given token ────────────────────────────────
 
 const fetchCurrentUser = async (token) => {
-	const response = await fetch(`${BASE_URL}/currentUserData`, {
+	const response = await fetch(`${BASE_URL}/currentUserData`, withAuthRequestDefaults({
 		method: 'GET',
-		credentials: 'include',
 		headers: {
-			'Content-Type': 'application/json',
 			Authorization: `Bearer ${token}`,
 		},
-	});
+	}));
 
 	if (!response.ok) return null;
 	return response.json();
@@ -27,10 +26,7 @@ const fetchCurrentUser = async (token) => {
 
 const tryRefresh = async () => {
 	try {
-		const response = await fetch(`${BASE_URL}/refresh`, {
-			method: 'POST',
-			credentials: 'include', // sends the refresh cookie automatically
-		});
+		const response = await fetch(`${BASE_URL}/refresh`, withAuthRequestDefaults({ method: 'POST' }));
 
 		if (!response.ok) return null;
 
