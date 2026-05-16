@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import './admin-booking-detail-page.scss';
 import { adminBookingService, invoiceService } from '../../../app-core/services/admin-booking-service';
 import { toastError, toastSuccess } from '../../../app-core/services/toast-service';
-import SideDrawer from '../../../app-core/shared/side-drawer/side-drawer';
+import SideDrawer from '../../../shared/components/SideDrawer/SideDrawer';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 

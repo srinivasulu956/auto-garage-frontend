@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { logoutUser } from '../../../app-core/actions/auth-actions';
 import { setAuthInitialized, setLoggedUserData, setThemeData } from '../../../app-core/reducers/common-slice';
 import { getStoredToken, setStoredToken } from '../../../app-core/services/api-client';
-import LoadingPage from '../../../app-core/shared/loading-page/loading-page';
+import LoadingPage from '../../../shared/components/LoadingPage/LoadingPage';
 import { fetchCurrentUserRequest, refreshTokenRequest } from '../services/authService';
 import { getAccessToken } from '../utils/authResponse';
 import '../styles/AuthInitializer.scss';
