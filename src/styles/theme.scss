@@ -1,0 +1,13 @@
+@use './theme-variables' as theme;
+
+:root {
+	@include theme.theme-custom-properties(theme.$theme-light);
+}
+
+[data-theme='light-theme'] {
+	@include theme.theme-custom-properties(theme.$theme-light);
+}
+
+[data-theme='dark-theme'] {
+	@include theme.theme-custom-properties(theme.$theme-dark);
+}

@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import './admin-booking-detail-page.scss';
 import { adminBookingService, invoiceService } from '../../../app-core/services/admin-booking-service';
 import { toastError, toastSuccess } from '../../../app-core/services/toast-service';
-import SideDrawer from '../../../app-core/shared/side-drawer/side-drawer';
+import SideDrawer from '../../../shared/components/SideDrawer/SideDrawer';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -97,7 +97,7 @@ function InvoiceItemRow({ item, idx, onChange, onRemove, locked }) {
 
 // ─── Invoice Detail Panel ─────────────────────────────────────────────────────
 
-function InvoiceDetailPanel({ invoice, booking }) {
+function InvoiceDetailPanel({ invoice }) {
 	if (!invoice) return <div className="inv-detail-loading">Loading invoice…</div>;
 
 	return (
@@ -200,7 +200,7 @@ function InvoiceDetailPanel({ invoice, booking }) {
 
 // ─── Download Invoice as PDF (via print dialog) ───────────────────────────────
 
-function downloadInvoice(invoice, booking) {
+function downloadInvoice(invoice) {
 	const fmtCur = (v) => `₹${Number(v).toFixed(2)}`;
 	const fmtD = (d) => (d ? new Date(d).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : '—');
 
@@ -887,7 +887,7 @@ export default function AdminBookingDetailPage() {
 					{invoiceLoading ? (
 						<div className="inv-detail-loading">Loading invoice…</div>
 					) : (
-						<InvoiceDetailPanel invoice={invoiceData} booking={booking} />
+						<InvoiceDetailPanel invoice={invoiceData} />
 					)}
 					{invoiceData && (
 						<div className="sd-footer" style={{ marginTop: '1.5rem' }}>

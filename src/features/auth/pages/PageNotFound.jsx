@@ -1,9 +1,10 @@
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { logoutUser } from '../../app-core/actions/auth-actions';
+import { logoutUser } from '../../../app-core/actions/auth-actions';
+import AuthStatePanel from '../components/AuthStatePanel';
 
-const PageNotFound = () => {
+const PageNotFoundPage = () => {
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
 	const token = localStorage.getItem('ag_access_token');
@@ -29,19 +30,17 @@ const PageNotFound = () => {
 	};
 
 	return (
-		<div className="state-page">
-			<div className="state-panel">
-				<h1>404</h1>
-				<h2>Page Not Found</h2>
-				<p>The page you are looking for does not exist.</p>
+		<AuthStatePanel>
+			<h1>404</h1>
+			<h2>Page Not Found</h2>
+			<p>The page you are looking for does not exist.</p>
 
-				<div className="state-actions">
-					<button onClick={handleGoBack}>Go Back</button>
-					{token && <button onClick={onClickLogout}>Logout</button>}
-				</div>
+			<div className="state-actions">
+				<button onClick={handleGoBack}>Go Back</button>
+				{token && <button onClick={onClickLogout}>Logout</button>}
 			</div>
-		</div>
+		</AuthStatePanel>
 	);
 };
 
-export default PageNotFound;
+export default PageNotFoundPage;
