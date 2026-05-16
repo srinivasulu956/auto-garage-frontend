@@ -114,7 +114,6 @@ export default function AdminDashboard() {
 	// ── Derived metrics ───────────────────────────────────────────────────────
 
 	const activeBookings = bookings.filter((b) => ACTIVE_STATUSES.includes(b.statusLabel?.replace(/ /g, '')));
-	const pendingCount = bookings.filter((b) => b.statusLabel?.replace(/ /g, '') === 'Pending').length;
 	const needsAction = bookings.filter((b) => ['Pending', 'Confirmed', 'QualityCheck'].includes(b.statusLabel?.replace(/ /g, ''))).length;
 
 	const paidInvoices = invoices.filter((i) => i.statusLabel === 'Paid');

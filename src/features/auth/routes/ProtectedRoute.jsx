@@ -1,14 +1,20 @@
+import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Navigate } from 'react-router-dom';
-import { logoutUser } from '../../app-core/actions/auth-actions';
+import { logoutUser } from '../../../app-core/actions/auth-actions';
 
 const ProtectedRoute = ({ children, allowedRoles }) => {
 	const dispatch = useDispatch();
 	const token = localStorage.getItem('ag_access_token');
 	const loggedUserData = useSelector((state) => state.commonState.loggedUserData);
 
+	useEffect(() => {
+		if (!token) {
+			dispatch(logoutUser());
+		}
+	}, [dispatch, token]);
+
 	if (!token) {
-		dispatch(logoutUser());
 		return <Navigate to="/login" replace />;
 	}
 

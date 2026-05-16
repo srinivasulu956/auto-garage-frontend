@@ -1,73 +1,84 @@
-# React + Vite
+# AutoFix Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+AutoFix is a garage management frontend built with React, Vite, Redux Toolkit, Bootstrap, and SCSS.
 
-Currently, two official plugins are available:
+The app supports three main roles:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
-
-# AutoGarage Frontend
-
-A garage management web app built with React + Vite.
-
-## Tech Stack
-
-- React 18
-- Redux
-- Bootstrap + SCSS
-- Vite
-
-## Prerequisites
-
-- [Node.js](https://nodejs.org) (v18 or above)
+| Role | Main Areas |
+| --- | --- |
+| Admin | Dashboard, bookings, services, staff, customers |
+| Customer | Dashboard, vehicles, bookings, invoices, profile |
+| Mechanic | Dashboard, assigned jobs, work logs, profile |
 
 ## Getting Started
 
-### Step 1: Clone the repo
+### Prerequisites
 
-git clone https://github.com/srinivasulu956/auto-garage-frontend.git
+- Node.js 18 or newer
+- npm
+- Running AutoFix backend API
 
-### Step 2: Install dependencies
+### Install
 
-cd AutoFix
+```bash
 npm install
+```
 
-### Step 3: Configure environment
+### Environment
 
-Create a `.env.local` file in the root folder:
+Create a local environment file based on the backend URL used by your machine.
+
+Required variables:
+
+```text
 VITE_API_BASE_URL=https://localhost:7224/api
+VITE_AUTH_BASE_URL=https://localhost:7224/api/Auth
+```
 
-> Make sure the backend is running on port 7224
-> before starting the frontend.
+Do not commit `.env*` files.
 
-### Step 4: Run the project
+### Run Locally
 
+```bash
 npm run dev
+```
 
-App runs at: http://localhost:7600
+### Build
 
-## Roles
+```bash
+npm run build
+```
 
-| Role     | Features                                     |
-| -------- | -------------------------------------------- |
-| Admin    | Dashboard, bookings, users, mechanics        |
-| Customer | Book service, manage vehicles, view invoices |
-| Mechanic | View assigned jobs, update job status        |
+### Lint
 
-## Branching Strategy
+```bash
+npm run lint
+```
 
-- `main` — stable production code
-- `develop` — active development branch
-- `feature/*` — individual feature branches
+If generated build files cause lint noise, lint source files directly:
 
-Always raise a PR to `develop`. Never push directly to
-`main` or `develop`.
+```bash
+.\node_modules\.bin\eslint.cmd src
+```
+
+## Project Documentation
+
+- [Architecture](docs/architecture.md)
+- [Frontend Coding Standards](docs/frontend-coding-standards.md)
+- [Folder Structure Guidelines](docs/folder-structure.md)
+- [SCSS Conventions](docs/scss-conventions.md)
+- [Reusable Component Guidelines](docs/reusable-components.md)
+
+## Development Principles
+
+- Preserve existing behavior unless a change is explicitly requested.
+- Prefer feature-based organization.
+- Keep shared code generic and reusable.
+- Keep feature-specific code inside its feature.
+- Avoid cross-feature imports.
+- Use SCSS and theme variables instead of inline CSS.
+- Validate with build, lint, and focused manual checks.
+
+## Git
+
+Repository ownership rules are defined in [AGENTS.md](AGENTS.md). Git operations, branching, and deployments are handled by the repository owner.
