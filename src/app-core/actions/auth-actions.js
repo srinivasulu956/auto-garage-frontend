@@ -1,11 +1,11 @@
 import { setAuthInitialized } from '../reducers/common-slice';
-import { AUTH_TOKEN_KEY, withAuthRequestDefaults } from '../services/auth-request';
+import { clearStoredToken, getStoredToken, withAuthRequestDefaults } from '../services/auth-request';
 
 export const RESET_STORE = 'RESET_STORE';
 const BASE_URL = import.meta.env.VITE_AUTH_BASE_URL;
 
 export const logoutUser = () => async (dispatch) => {
-	const token = localStorage.getItem(AUTH_TOKEN_KEY);
+	const token = getStoredToken();
 
 	// Tell the backend to blacklist this token + revoke the refresh cookie
 	if (token) {
@@ -22,7 +22,7 @@ export const logoutUser = () => async (dispatch) => {
 		}
 	}
 
-	localStorage.removeItem(AUTH_TOKEN_KEY);
+	clearStoredToken();
 	dispatch({ type: RESET_STORE });
 	dispatch(setAuthInitialized());
 };

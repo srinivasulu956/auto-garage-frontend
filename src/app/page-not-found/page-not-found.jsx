@@ -2,14 +2,15 @@ import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { logoutUser } from '../../app-core/actions/auth-actions';
+import { getStoredToken } from '../../app-core/services/api-client';
 
 const PageNotFound = () => {
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
-	const token = localStorage.getItem('ag_access_token');
+	const token = getStoredToken();
 
 	useEffect(() => {
-		if (!localStorage.getItem('ag_access_token')) {
+		if (!getStoredToken()) {
 			navigate('/login', { replace: true });
 		}
 	}, [navigate]);

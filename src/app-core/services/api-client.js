@@ -1,16 +1,18 @@
 import { logoutUser } from '../actions/auth-actions';
 import store from '../reducers/store';
-import { AUTH_TOKEN_KEY, defaultApiHeaders, withAuthRequestDefaults } from './auth-request';
+import {
+	clearStoredToken,
+	defaultApiHeaders,
+	getStoredToken,
+	refreshAccessToken,
+	setStoredToken,
+} from './auth-request';
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 let refreshPromise = null;
 
-export const getStoredToken = () => localStorage.getItem(AUTH_TOKEN_KEY);
-export const setStoredToken = (token) => {
-	if (token) localStorage.setItem(AUTH_TOKEN_KEY, token);
-};
-export const clearStoredToken = () => localStorage.removeItem(AUTH_TOKEN_KEY);
+export { clearStoredToken, getStoredToken, setStoredToken };
 
 const clearSession = () => {
 	clearStoredToken();
@@ -39,33 +41,10 @@ const handleResponse = async (response) => {
 	return response.json();
 };
 
-const refreshAccessToken = async () => {
-	try {
-		const response = await fetch(`${BASE_URL}/Auth/refresh`, withAuthRequestDefaults({ method: 'POST' }));
-
-		if (!response.ok) {
-			clearSession();
-			return null;
-		}
-
-		const data = await response.json();
-		const accessToken = data.accessToken ?? data.AccessToken;
-
-		if (!accessToken) {
-			clearSession();
-			return null;
-		}
-
-		setStoredToken(accessToken);
-		return accessToken;
-	} catch {
-		clearSession();
-		return null;
-	}
-};
-
 const getRefreshedToken = async () => {
 	if (!refreshPromise) {
+		// Multiple API calls can fail with 401 at once. Share one refresh request,
+		// then let every waiting request retry with the same new access token.
 		refreshPromise = refreshAccessToken().finally(() => {
 			refreshPromise = null;
 		});

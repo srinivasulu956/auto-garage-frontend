@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { logoutUser } from '../../app-core/actions/auth-actions';
 import { setAuthInitialized, setLoggedUserData, setThemeData } from '../../app-core/reducers/common-slice';
-import { AUTH_TOKEN_KEY, withAuthRequestDefaults } from '../../app-core/services/auth-request';
+import { setStoredToken, withAuthRequestDefaults } from '../../app-core/services/auth-request';
 import ThemeToggler from '../../app-core/shared/theme-toggler/theme-toggler';
 import './login-page.scss';
 
@@ -146,7 +146,7 @@ const Login = () => {
 			}
 
 			// ── Store in localStorage (persists across tabs + browser restarts) ──
-			localStorage.setItem(AUTH_TOKEN_KEY, accessToken);
+			setStoredToken(accessToken);
 			dispatch(setLoggedUserData({ role, user }));
 			dispatch(setThemeData(user.theme));
 			dispatch(setAuthInitialized());
