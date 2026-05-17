@@ -1,31 +1,23 @@
 import { logoutUser } from '../actions/auth-actions';
 import store from '../reducers/store';
+import {
+	clearStoredToken,
+	defaultApiHeaders,
+	getStoredToken,
+	refreshAccessToken,
+	setStoredToken,
+} from './auth-request';
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-const defaultHeaders = {
-	'Content-Type': 'application/json',
-	'ngrok-skip-browser-warning': 'true',
-};
-
 let refreshPromise = null;
 
-const TOKEN_KEY = 'ag_access_token';
-
-export const getStoredToken = () => localStorage.getItem(TOKEN_KEY);
-export const setStoredToken = (token) => {
-	if (token) localStorage.setItem(TOKEN_KEY, token);
-};
-export const clearStoredToken = () => localStorage.removeItem(TOKEN_KEY);
+export { clearStoredToken, getStoredToken, setStoredToken };
 
 const clearSession = () => {
 	clearStoredToken();
 	store.dispatch(logoutUser());
 };
-
-// ─────────────────────────────────────────
-// Helpers
-// ─────────────────────────────────────────
 
 const parseErrorMessage = async (response) => {
 	const contentType = response.headers.get('content-type') ?? '';
@@ -49,42 +41,10 @@ const handleResponse = async (response) => {
 	return response.json();
 };
 
-// ─────────────────────────────────────────
-// Refresh Logic
-// ─────────────────────────────────────────
-
-const refreshAccessToken = async () => {
-	try {
-		const response = await fetch(`${BASE_URL}/Auth/refresh`, {
-			method: 'POST',
-			credentials: 'include',
-			headers: { ...defaultHeaders }, // ✅ fixed: ngrok header included
-		});
-
-		if (!response.ok) {
-			clearSession();
-			return null;
-		}
-
-		const data = await response.json();
-		const accessToken = data.accessToken ?? data.AccessToken;
-
-		if (!accessToken) {
-			clearSession();
-			return null;
-		}
-
-		setStoredToken(accessToken);
-		return accessToken;
-	} catch {
-		clearSession();
-		return null;
-	}
-};
-
-// De-duplicate parallel 401s — only one refresh call goes to backend
 const getRefreshedToken = async () => {
 	if (!refreshPromise) {
+		// Multiple API calls can fail with 401 at once. Share one refresh request,
+		// then let every waiting request retry with the same new access token.
 		refreshPromise = refreshAccessToken().finally(() => {
 			refreshPromise = null;
 		});
@@ -92,24 +52,16 @@ const getRefreshedToken = async () => {
 	return refreshPromise;
 };
 
-// ─────────────────────────────────────────
-// HTTP Request Sender
-// ─────────────────────────────────────────
-
 const sendRequest = (url, options, token) =>
 	fetch(`${BASE_URL}${url}`, {
 		credentials: 'include',
 		...options,
 		headers: {
-			...defaultHeaders,
+			...defaultApiHeaders,
 			...(token && { Authorization: `Bearer ${token}` }),
 			...options.headers,
 		},
 	});
-
-// ─────────────────────────────────────────
-// Main Request Wrapper
-// ─────────────────────────────────────────
 
 const request = async (url, options = {}, retried = false) => {
 	const token = getStoredToken();
@@ -144,10 +96,6 @@ const request = async (url, options = {}, retried = false) => {
 
 	return handleResponse(response);
 };
-
-// ─────────────────────────────────────────
-// API Methods
-// ─────────────────────────────────────────
 
 const api = {
 	get: (url) => request(url, { method: 'GET' }),

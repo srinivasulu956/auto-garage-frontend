@@ -2,50 +2,26 @@ import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { logoutUser } from '../../app-core/actions/auth-actions';
 import { setAuthInitialized, setLoggedUserData, setThemeData } from '../../app-core/reducers/common-slice';
-import { getStoredToken, setStoredToken } from '../../app-core/services/api-client';
+import { getStoredToken } from '../../app-core/services/api-client';
+import { refreshAccessToken, withAuthRequestDefaults } from '../../app-core/services/auth-request';
 import LoadingPage from '../../app-core/shared/loading-page/loading-page';
 
 const BASE_URL = import.meta.env.VITE_AUTH_BASE_URL;
 
-// ── Fetch current user data with a given token ────────────────────────────────
-
 const fetchCurrentUser = async (token) => {
-	const response = await fetch(`${BASE_URL}/currentUserData`, {
-		method: 'GET',
-		credentials: 'include',
-		headers: {
-			'Content-Type': 'application/json',
-			Authorization: `Bearer ${token}`,
-		},
-	});
+	const response = await fetch(
+		`${BASE_URL}/currentUserData`,
+		withAuthRequestDefaults({
+			method: 'GET',
+			headers: {
+				Authorization: `Bearer ${token}`,
+			},
+		})
+	);
 
 	if (!response.ok) return null;
 	return response.json();
 };
-
-// ── Attempt silent refresh using the HttpOnly cookie ─────────────────────────
-
-const tryRefresh = async () => {
-	try {
-		const response = await fetch(`${BASE_URL}/refresh`, {
-			method: 'POST',
-			credentials: 'include', // sends the refresh cookie automatically
-		});
-
-		if (!response.ok) return null;
-
-		const data = await response.json();
-		const token = data.accessToken ?? data.AccessToken;
-		if (!token) return null;
-
-		setStoredToken(token);
-		return token;
-	} catch {
-		return null;
-	}
-};
-
-// ─────────────────────────────────────────────────────────────────────────────
 
 const AuthInitializer = ({ children }) => {
 	const dispatch = useDispatch();
@@ -55,42 +31,33 @@ const AuthInitializer = ({ children }) => {
 		const restoreAuth = async () => {
 			let token = getStoredToken();
 
-			// ── Case 1: No token in localStorage ─────────────────────────────
-			// The user may have closed the tab — the access token is gone but
-			// the refresh cookie may still be valid (7 day window).
-			// Attempt a silent refresh BEFORE deciding to log out.
+			// On a hard refresh Redux is empty, but localStorage and the HttpOnly
+			// refresh cookie can still restore the session without showing login.
 			if (!token) {
-				token = await tryRefresh();
+				token = await refreshAccessToken();
 
 				if (!token) {
-					// Refresh also failed — no valid session at all
 					dispatch(setAuthInitialized());
 					return;
 				}
 			}
 
-			// ── Case 2: Token exists (or was just refreshed) ──────────────────
-			// Call /currentUserData to validate the token and get user info.
 			let user = await fetchCurrentUser(token);
 
-			// ── Case 3: currentUserData returned 401 (token expired) ──────────
-			// Access token expired mid-session. Try a silent refresh once.
+			// If the stored access token expired, refresh once and validate again.
 			if (!user) {
-				token = await tryRefresh();
+				token = await refreshAccessToken();
 
 				if (token) {
 					user = await fetchCurrentUser(token);
 				}
 			}
 
-			// ── Case 4: Both token and refresh are dead ───────────────────────
-			// Genuine session expiry — user must log in again.
 			if (!user) {
 				dispatch(logoutUser());
 				return;
 			}
 
-			// ── Success: restore session ──────────────────────────────────────
 			const roles = user.roles ?? user.Roles ?? [];
 			const role = roles[0]?.toLowerCase() ?? '';
 
@@ -100,7 +67,7 @@ const AuthInitializer = ({ children }) => {
 		};
 
 		restoreAuth();
-	}, []);
+	}, [dispatch]);
 
 	if (!authInitialized) {
 		return (
