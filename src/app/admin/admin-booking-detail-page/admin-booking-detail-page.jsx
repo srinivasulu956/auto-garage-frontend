@@ -299,8 +299,6 @@ function downloadInvoice(invoice) {
 	setTimeout(() => win.print(), 500);
 }
 
-// â”€â”€â”€ Main Page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-
 export default function AdminBookingDetailPage() {
 	const { id } = useParams();
 	const navigate = useNavigate();
@@ -382,8 +380,6 @@ export default function AdminBookingDetailPage() {
 		setInvoiceItems([baseItem, ...workLogRows, { description: '', quantity: 1, unitPrice: '' }]);
 		setPanel('invoice');
 	}, []);
-
-	// â”€â”€ Actions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 	const handleConfirm = async () => {
 		try {
@@ -492,8 +488,6 @@ export default function AdminBookingDetailPage() {
 			setSubmitting(false);
 		}
 	};
-
-	// â”€â”€ Render â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 	if (loading) return <div className="abd-loading">Loading…</div>;
 	if (!booking) return <div className="abd-loading">Booking not found.</div>;
