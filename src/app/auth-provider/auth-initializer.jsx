@@ -4,7 +4,7 @@ import { logoutUser } from '../../app-core/actions/auth-actions';
 import { setAuthInitialized, setLoggedUserData, setThemeData } from '../../app-core/reducers/common-slice';
 import { getStoredToken } from '../../app-core/services/api-client';
 import { refreshAccessToken, withAuthRequestDefaults } from '../../app-core/services/auth-request';
-import LoadingPage from '../../app-core/shared/loading-page/loading-page';
+import LoadingPage from '../../shared/components/loading-page/loading-page';
 
 const BASE_URL = import.meta.env.VITE_AUTH_BASE_URL;
 
@@ -31,15 +31,9 @@ const AuthInitializer = ({ children }) => {
 		const restoreAuth = async () => {
 			let token = getStoredToken();
 
-			// On a hard refresh Redux is empty, but localStorage and the HttpOnly
-			// refresh cookie can still restore the session without showing login.
 			if (!token) {
-				token = await refreshAccessToken();
-
-				if (!token) {
-					dispatch(setAuthInitialized());
-					return;
-				}
+				dispatch(setAuthInitialized());
+				return;
 			}
 
 			let user = await fetchCurrentUser(token);
@@ -71,7 +65,7 @@ const AuthInitializer = ({ children }) => {
 
 	if (!authInitialized) {
 		return (
-			<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+			<div className="auth-initializer-loading">
 				<LoadingPage />
 			</div>
 		);

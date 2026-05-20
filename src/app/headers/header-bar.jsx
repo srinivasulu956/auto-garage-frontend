@@ -1,12 +1,13 @@
+import { memo, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom'; // 👈 add this
+import { useNavigate } from 'react-router-dom';
 import { logoutUser } from '../../app-core/actions/auth-actions';
-import ThemeToggler from '../../app-core/shared/theme-toggler/theme-toggler';
+import ThemeToggler from '../../shared/components/theme-toggler/theme-toggler';
 import './header-bar.scss';
 
 const HeaderBar = () => {
 	const dispatch = useDispatch();
-	const navigate = useNavigate(); // 👈 init navigate
+	const navigate = useNavigate();
 
 	const loggedUserData = useSelector((state) => state?.commonState?.loggedUserData);
 	const user = loggedUserData?.user;
@@ -15,16 +16,15 @@ const HeaderBar = () => {
 
 	const role = loggedUserData?.role ?? 'user';
 
-	const handleLogout = () => {
+	const handleLogout = useCallback(() => {
 		dispatch(logoutUser());
-	};
+	}, [dispatch]);
 
-	// 👇 NEW: handle click
-	const handleUserClick = () => {
+	const handleUserClick = useCallback(() => {
 		if (!role) return;
 
 		navigate(`/${role}/details`);
-	};
+	}, [navigate, role]);
 
 	return (
 		<div className="header-bar">
@@ -36,8 +36,7 @@ const HeaderBar = () => {
 			<div className="header-actions">
 				<ThemeToggler />
 
-				{/* 👇 make clickable */}
-				<div className="header-user" onClick={handleUserClick} style={{ cursor: 'pointer' }}>
+				<div className="header-user" onClick={handleUserClick}>
 					<span className="header-avatar">{(displayName || role).slice(0, 1).toUpperCase()}</span>
 
 					<div className="header-user-copy">
@@ -54,4 +53,4 @@ const HeaderBar = () => {
 	);
 };
 
-export default HeaderBar;
+export default memo(HeaderBar);

@@ -1,45 +1,15 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { toastError } from '../../../app-core/services/toast-service';
-import './mechanic-jobs-page.scss';
 import { mechanicJobService } from '../../../app-core/services/mechanic-service';
-
-// ─── Constants ────────────────────────────────────────────────────────────────
-
-const STATUS_META = {
-	AssignedToMechanic: { bg: '#f0f9ff', color: '#0369a1', dot: '#0ea5e9', label: 'Assigned' },
-	InProgress: { bg: '#fefce8', color: '#a16207', dot: '#eab308', label: 'In Progress' },
-	WaitingForParts: { bg: '#fdf4ff', color: '#7e22ce', dot: '#a855f7', label: 'Waiting for Parts' },
-	QualityCheck: { bg: '#fff7ed', color: '#c2410c', dot: '#f97316', label: 'Quality Check' },
-	Completed: { bg: '#f0fdf4', color: '#15803d', dot: '#22c55e', label: 'Completed' },
-	Paid: { bg: '#f0fdf4', color: '#15803d', dot: '#22c55e', label: 'Paid' },
-};
-
-const FILTERS = [
-	{ key: 'all', label: 'All' },
-	{ key: 'active', label: 'Active' },
-	{ key: 'qc', label: 'Quality Check' },
-	{ key: 'done', label: 'Completed' },
-];
-
-const ACTIVE_KEYS = ['AssignedToMechanic', 'InProgress', 'WaitingForParts'];
-const DONE_KEYS = ['Completed', 'Paid'];
-
-const normalise = (s) => s?.replace(/ /g, '') ?? '';
-
-const fmtDate = (d) => (d ? new Date(d).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : '—');
-
-// ─── Sub-components ───────────────────────────────────────────────────────────
+import { toastError } from '../../../app-core/services/toast-service';
+import StatusBadgeBase from '../../../shared/components/status-badge/status-badge';
+import { MECHANIC_ACTIVE_JOB_STATUSES, MECHANIC_DONE_JOB_STATUSES, MECHANIC_JOB_FILTERS } from '../../../shared/data-modals/booking-status';
+import { formatDateIN } from '../../../shared/utils/date-formatters';
+import { normalizeStatusKey } from '../../../shared/utils/status';
+import './mechanic-jobs-page.scss';
 
 function StatusBadge({ statusLabel }) {
-	const key = normalise(statusLabel);
-	const m = STATUS_META[key] || { bg: '#f3f4f6', color: '#374151', dot: '#9ca3af', label: statusLabel };
-	return (
-		<span className="mj-status" style={{ background: m.bg, color: m.color }}>
-			<span className="mj-status__dot" style={{ background: m.dot }} />
-			{m.label}
-		</span>
-	);
+	return <StatusBadgeBase className="mj-status" dotClassName="mj-status__dot" status={statusLabel} variant="mechanic" />;
 }
 
 function SkeletonCard() {
@@ -55,11 +25,8 @@ function SkeletonCard() {
 	);
 }
 
-// ─── Main Page ────────────────────────────────────────────────────────────────
-
 export default function MechanicJobsPage() {
 	const navigate = useNavigate();
-
 	const [jobs, setJobs] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const [filter, setFilter] = useState('all');
@@ -80,21 +47,29 @@ export default function MechanicJobsPage() {
 		load();
 	}, [load]);
 
-	const getCount = (key) => {
-		if (key === 'all') return jobs.length;
-		if (key === 'active') return jobs.filter((j) => ACTIVE_KEYS.includes(normalise(j.statusLabel))).length;
-		if (key === 'qc') return jobs.filter((j) => normalise(j.statusLabel) === 'QualityCheck').length;
-		if (key === 'done') return jobs.filter((j) => DONE_KEYS.includes(normalise(j.statusLabel))).length;
-		return 0;
-	};
+	const filterCounts = useMemo(
+		() => ({
+			all: jobs.length,
+			active: jobs.filter((job) => MECHANIC_ACTIVE_JOB_STATUSES.includes(normalizeStatusKey(job.statusLabel))).length,
+			qc: jobs.filter((job) => normalizeStatusKey(job.statusLabel) === 'QualityCheck').length,
+			done: jobs.filter((job) => MECHANIC_DONE_JOB_STATUSES.includes(normalizeStatusKey(job.statusLabel))).length,
+		}),
+		[jobs]
+	);
 
-	const filtered = jobs.filter((j) => {
-		const raw = normalise(j.statusLabel);
-		if (filter === 'active') return ACTIVE_KEYS.includes(raw);
-		if (filter === 'qc') return raw === 'QualityCheck';
-		if (filter === 'done') return DONE_KEYS.includes(raw);
-		return true;
-	});
+	const filtered = useMemo(
+		() =>
+			jobs.filter((job) => {
+				const statusKey = normalizeStatusKey(job.statusLabel);
+				if (filter === 'active') return MECHANIC_ACTIVE_JOB_STATUSES.includes(statusKey);
+				if (filter === 'qc') return statusKey === 'QualityCheck';
+				if (filter === 'done') return MECHANIC_DONE_JOB_STATUSES.includes(statusKey);
+				return true;
+			}),
+		[jobs, filter]
+	);
+
+	const activeFilterLabel = MECHANIC_JOB_FILTERS.find((item) => item.key === filter)?.label.toLowerCase();
 
 	return (
 		<div className="dashboard-page mj-page">
@@ -106,16 +81,15 @@ export default function MechanicJobsPage() {
 				</div>
 			</section>
 
-			{/* Filter tabs */}
 			<div className="mj-filters">
-				{FILTERS.map((f) => (
+				{MECHANIC_JOB_FILTERS.map((item) => (
 					<button
-						key={f.key}
-						className={`mj-filter-btn ${filter === f.key ? 'mj-filter-btn--active' : ''}`}
-						onClick={() => setFilter(f.key)}
+						key={item.key}
+						className={`mj-filter-btn ${filter === item.key ? 'mj-filter-btn--active' : ''}`}
+						onClick={() => setFilter(item.key)}
 					>
-						{f.label}
-						{!loading && <span className="mj-filter-count">{getCount(f.key)}</span>}
+						{item.label}
+						{!loading && <span className="mj-filter-count">{filterCounts[item.key] ?? 0}</span>}
 					</button>
 				))}
 			</div>
@@ -126,11 +100,7 @@ export default function MechanicJobsPage() {
 				) : filtered.length === 0 ? (
 					<div className="empty-panel">
 						<div className="empty-panel-icon">🔧</div>
-						<h2>
-							{filter === 'all'
-								? 'No jobs assigned'
-								: `No ${FILTERS.find((f) => f.key === filter)?.label.toLowerCase()} jobs`}
-						</h2>
+						<h2>{filter === 'all' ? 'No jobs assigned' : `No ${activeFilterLabel} jobs`}</h2>
 						<p>Jobs assigned to you will appear here.</p>
 					</div>
 				) : (
@@ -141,7 +111,7 @@ export default function MechanicJobsPage() {
 								<p>
 									{job.vehicle?.make} {job.vehicle?.model} · {job.vehicle?.licensePlate}
 								</p>
-								<span className="mj-date">📅 {fmtDate(job.scheduledDate)}</span>
+								<span className="mj-date">📅 {formatDateIN(job.scheduledDate)}</span>
 							</div>
 							<StatusBadge statusLabel={job.statusLabel} />
 						</div>

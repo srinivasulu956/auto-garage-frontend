@@ -1,36 +1,21 @@
-import { useEffect, useState, useCallback } from 'react';
+﻿import { useEffect, useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import './admin-booking-detail-page.scss';
 import { adminBookingService, invoiceService } from '../../../app-core/services/admin-booking-service';
 import { toastError, toastSuccess } from '../../../app-core/services/toast-service';
-import SideDrawer from '../../../app-core/shared/side-drawer/side-drawer';
+import SideDrawer from '../../../shared/components/side-drawer/side-drawer';
+import { BOOKING_STATUS_STEPS, getBookingStatusMeta } from '../../../shared/data-modals/booking-status';
+import { formatDateIN, formatDateTimeIN } from '../../../shared/utils/date-formatters';
+import { normalizeStatusKey } from '../../../shared/utils/status';
 
-// ─── Constants ────────────────────────────────────────────────────────────────
+// Constants
 
-const STATUS_META = {
-	Pending: { bg: '#fff7ed', color: '#c2410c', dot: '#f97316', label: 'Pending' },
-	Confirmed: { bg: '#eff6ff', color: '#1d4ed8', dot: '#3b82f6', label: 'Confirmed' },
-	AssignedToMechanic: { bg: '#f0f9ff', color: '#0369a1', dot: '#0ea5e9', label: 'Assigned to Mechanic' },
-	InProgress: { bg: '#fefce8', color: '#a16207', dot: '#eab308', label: 'In Progress' },
-	WaitingForParts: { bg: '#fdf4ff', color: '#7e22ce', dot: '#a855f7', label: 'Waiting for Parts' },
-	QualityCheck: { bg: '#fff7ed', color: '#c2410c', dot: '#f97316', label: 'Quality Check' },
-	Completed: { bg: '#f0fdf4', color: '#15803d', dot: '#22c55e', label: 'Completed' },
-	InvoiceGenerated: { bg: '#fefce8', color: '#854d0e', dot: '#f59e0b', label: 'Invoice Sent' },
-	Paid: { bg: '#f0fdf4', color: '#15803d', dot: '#22c55e', label: 'Paid' },
-	Cancelled: { bg: '#fef2f2', color: '#991b1b', dot: '#ef4444', label: 'Cancelled' },
-};
-
-const STATUS_STEPS = ['Pending', 'Confirmed', 'AssignedToMechanic', 'InProgress', 'QualityCheck', 'Completed', 'InvoiceGenerated', 'Paid'];
-
-const fmtDate = (d) => (d ? new Date(d).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : '—');
-const fmtDateTime = (d) =>
-	d ? new Date(d).toLocaleString('en-IN', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }) : '—';
-
-// ─── Sub-components ───────────────────────────────────────────────────────────
+const fmtDate = formatDateIN;
+const fmtDateTime = formatDateTimeIN;
 
 function StatusBadge({ status }) {
-	const raw = status?.replace(/ /g, '');
-	const m = STATUS_META[raw] || STATUS_META[status] || { bg: '#f3f4f6', color: '#374151', dot: '#9ca3af', label: status };
+	const raw = normalizeStatusKey(status);
+	const m = getBookingStatusMeta(raw);
 	return (
 		<span className="abd-badge" style={{ background: m.bg, color: m.color }}>
 			<span className="abd-badge__dot" style={{ background: m.dot }} />
@@ -40,9 +25,9 @@ function StatusBadge({ status }) {
 }
 
 function ProgressBar({ statusLabel }) {
-	const raw = statusLabel?.replace(/ /g, '');
-	const idx = STATUS_STEPS.indexOf(raw);
-	const pct = idx < 0 ? 0 : Math.round(((idx + 1) / STATUS_STEPS.length) * 100);
+	const raw = normalizeStatusKey(statusLabel);
+	const idx = BOOKING_STATUS_STEPS.indexOf(raw);
+	const pct = idx < 0 ? 0 : Math.round(((idx + 1) / BOOKING_STATUS_STEPS.length) * 100);
 	return (
 		<div className="abd-progress">
 			<div className="abd-progress__bar" style={{ width: `${pct}%` }} />
@@ -95,9 +80,9 @@ function InvoiceItemRow({ item, idx, onChange, onRemove, locked }) {
 	);
 }
 
-// ─── Invoice Detail Panel ─────────────────────────────────────────────────────
+// Invoice Detail Panel
 
-function InvoiceDetailPanel({ invoice, booking }) {
+function InvoiceDetailPanel({ invoice }) {
 	if (!invoice) return <div className="inv-detail-loading">Loading invoice…</div>;
 
 	return (
@@ -198,9 +183,9 @@ function InvoiceDetailPanel({ invoice, booking }) {
 	);
 }
 
-// ─── Download Invoice as PDF (via print dialog) ───────────────────────────────
+// Download Invoice as PDF (via print dialog)
 
-function downloadInvoice(invoice, booking) {
+function downloadInvoice(invoice) {
 	const fmtCur = (v) => `₹${Number(v).toFixed(2)}`;
 	const fmtD = (d) => (d ? new Date(d).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : '—');
 
@@ -314,7 +299,7 @@ function downloadInvoice(invoice, booking) {
 	setTimeout(() => win.print(), 500);
 }
 
-// ─── Main Page ────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Main Page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 export default function AdminBookingDetailPage() {
 	const { id } = useParams();
@@ -398,7 +383,7 @@ export default function AdminBookingDetailPage() {
 		setPanel('invoice');
 	}, []);
 
-	// ── Actions ───────────────────────────────────────────────────────────────
+	// â”€â”€ Actions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 	const handleConfirm = async () => {
 		try {
@@ -508,12 +493,12 @@ export default function AdminBookingDetailPage() {
 		}
 	};
 
-	// ── Render ────────────────────────────────────────────────────────────────
+	// â”€â”€ Render â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 	if (loading) return <div className="abd-loading">Loading…</div>;
 	if (!booking) return <div className="abd-loading">Booking not found.</div>;
 
-	const raw = booking.statusLabel?.replace(/ /g, '');
+	const raw = normalizeStatusKey(booking.statusLabel);
 	const canConfirm = raw === 'Pending';
 	const canAssign = raw === 'Confirmed';
 	const canReassign = raw === 'QualityCheck';
@@ -631,12 +616,12 @@ export default function AdminBookingDetailPage() {
 										className="sd-btn sd-btn--ghost"
 										onClick={async () => {
 											if (invoiceData) {
-												downloadInvoice(invoiceData, booking);
+												downloadInvoice(invoiceData);
 											} else {
 												try {
 													const data = await invoiceService.getByBookingIdAdmin(id);
 													setInvoiceData(data);
-													downloadInvoice(data, booking);
+													downloadInvoice(data);
 												} catch {
 													toastError('Failed to load invoice for download');
 												}
@@ -666,7 +651,7 @@ export default function AdminBookingDetailPage() {
 						<h3 className="abd-card__heading">Status Timeline</h3>
 						<div className="abd-timeline">
 							{(booking.statusHistory || []).map((h, i) => {
-								const sm = STATUS_META[h.statusLabel?.replace(/ /g, '')] || STATUS_META[h.statusLabel] || {};
+								const sm = getBookingStatusMeta(h.statusLabel);
 								return (
 									<div key={i} className="abd-tl-item">
 										<div className="abd-tl-item__dot" style={{ background: sm.dot || '#9ca3af' }} />
@@ -684,7 +669,7 @@ export default function AdminBookingDetailPage() {
 				</div>
 			</div>
 
-			{/* ── Confirm drawer ── */}
+			{/* Confirm drawer */}
 			<SideDrawer isOpen={panel === 'confirm'} onClose={() => setPanel(null)} title="Confirm Booking" disabled={submitting}>
 				<div className="sd-form">
 					<div className="sd-field">
@@ -707,7 +692,7 @@ export default function AdminBookingDetailPage() {
 				</div>
 			</SideDrawer>
 
-			{/* ── Assign drawer ── */}
+			{/* Assign drawer */}
 			<SideDrawer isOpen={panel === 'assign'} onClose={() => setPanel(null)} title="Assign Mechanic" disabled={submitting}>
 				<div className="sd-form">
 					<div className="sd-field">
@@ -743,7 +728,7 @@ export default function AdminBookingDetailPage() {
 				</div>
 			</SideDrawer>
 
-			{/* ── Reassign drawer ── */}
+			{/* Reassign drawer */}
 			<SideDrawer
 				isOpen={panel === 'reassign'}
 				onClose={() => {
@@ -802,7 +787,7 @@ export default function AdminBookingDetailPage() {
 				</div>
 			</SideDrawer>
 
-			{/* ── Mark complete drawer ── */}
+			{/* Mark complete drawer */}
 			<SideDrawer isOpen={panel === 'complete'} onClose={() => setPanel(null)} title="Mark as Completed" disabled={submitting}>
 				<div className="sd-form">
 					<div className="abd-info-banner abd-info-banner--info" style={{ marginBottom: '1rem' }}>
@@ -828,7 +813,7 @@ export default function AdminBookingDetailPage() {
 				</div>
 			</SideDrawer>
 
-			{/* ── Generate invoice drawer ── */}
+			{/* Generate invoice drawer */}
 			<SideDrawer isOpen={panel === 'invoice'} onClose={() => setPanel(null)} title="Generate Invoice" disabled={submitting}>
 				<div className="sd-form">
 					<div className="sd-section-label">Line Items</div>
@@ -881,20 +866,20 @@ export default function AdminBookingDetailPage() {
 				</div>
 			</SideDrawer>
 
-			{/* ── View Invoice drawer ── */}
+			{/* View Invoice drawer */}
 			<SideDrawer isOpen={panel === 'view-invoice'} onClose={() => setPanel(null)} title="Invoice Details">
 				<div className="sd-form">
 					{invoiceLoading ? (
 						<div className="inv-detail-loading">Loading invoice…</div>
 					) : (
-						<InvoiceDetailPanel invoice={invoiceData} booking={booking} />
+						<InvoiceDetailPanel invoice={invoiceData} />
 					)}
 					{invoiceData && (
 						<div className="sd-footer" style={{ marginTop: '1.5rem' }}>
 							<button className="sd-btn sd-btn--ghost" onClick={() => setPanel(null)}>
 								Close
 							</button>
-							<button className="sd-btn sd-btn--primary" onClick={() => downloadInvoice(invoiceData, booking)}>
+							<button className="sd-btn sd-btn--primary" onClick={() => downloadInvoice(invoiceData)}>
 								⬇️ Download PDF
 							</button>
 						</div>

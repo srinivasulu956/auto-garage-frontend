@@ -1,45 +1,24 @@
-import { useEffect, useState, useCallback } from 'react';
+﻿import { useEffect, useState, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { adminBookingService, invoiceService } from '../../../app-core/services/admin-booking-service';
 import { adminCustomerService } from '../../../app-core/services/admin-user-service';
 import { toastError } from '../../../app-core/services/toast-service';
+import StatusBadgeBase from '../../../shared/components/status-badge/status-badge';
+import { ADMIN_ACTION_REQUIRED_STATUSES, ADMIN_DASHBOARD_ACTIVE_BOOKING_STATUSES } from '../../../shared/data-modals/booking-status';
+import { formatCurrencyIN } from '../../../shared/utils/currency-formatters';
+import { formatDateIN } from '../../../shared/utils/date-formatters';
+import { normalizeStatusKey } from '../../../shared/utils/status';
 import './admin-dashboard.scss';
 
-// ─── Constants ────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Constants â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-const STATUS_META = {
-	Pending: { bg: '#fff7ed', color: '#c2410c', dot: '#f97316', label: 'Pending' },
-	Confirmed: { bg: '#eff6ff', color: '#1d4ed8', dot: '#3b82f6', label: 'Confirmed' },
-	AssignedToMechanic: { bg: '#f0f9ff', color: '#0369a1', dot: '#0ea5e9', label: 'Assigned' },
-	InProgress: { bg: '#fefce8', color: '#a16207', dot: '#eab308', label: 'In Progress' },
-	WaitingForParts: { bg: '#fdf4ff', color: '#7e22ce', dot: '#a855f7', label: 'Waiting Parts' },
-	QualityCheck: { bg: '#fff7ed', color: '#c2410c', dot: '#f97316', label: 'Quality Check' },
-	Completed: { bg: '#f0fdf4', color: '#15803d', dot: '#22c55e', label: 'Completed' },
-	InvoiceGenerated: { bg: '#fefce8', color: '#854d0e', dot: '#f59e0b', label: 'Invoice Sent' },
-	Paid: { bg: '#f0fdf4', color: '#15803d', dot: '#22c55e', label: 'Paid' },
-	Cancelled: { bg: '#fef2f2', color: '#991b1b', dot: '#ef4444', label: 'Cancelled' },
-};
-
-const ACTIVE_STATUSES = ['Pending', 'Confirmed', 'AssignedToMechanic', 'InProgress', 'WaitingForParts', 'QualityCheck'];
-
-const fmtDate = (d) => (d ? new Date(d).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : '—');
-
-const fmtCurrency = (n) => '₹' + (n || 0).toLocaleString('en-IN', { maximumFractionDigits: 0 });
-
-// ─── Sub-components ───────────────────────────────────────────────────────────
+const fmtDate = formatDateIN;
+const fmtCurrency = formatCurrencyIN;
 
 function StatusBadge({ status }) {
-	const raw = status?.replace(/ /g, '');
-	const m = STATUS_META[raw] || STATUS_META[status] || { bg: '#f3f4f6', color: '#374151', dot: '#9ca3af', label: status };
-	return (
-		<span className="ad-badge" style={{ background: m.bg, color: m.color }}>
-			<span className="ad-badge__dot" style={{ background: m.dot }} />
-			{m.label}
-		</span>
-	);
+	return <StatusBadgeBase className="ad-badge" dotClassName="ad-badge__dot" status={status} variant="compact" />;
 }
-
 function MetricCard({ icon, label, value, sub, accent, onClick }) {
 	return (
 		<div className={`metric-card ad-metric ${onClick ? 'ad-metric--clickable' : ''}`} style={{ '--accent': accent }} onClick={onClick}>
@@ -76,7 +55,7 @@ function SkeletonMetric() {
 	);
 }
 
-// ─── Main Page ────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Main Page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 export default function AdminDashboard() {
 	const navigate = useNavigate();
@@ -111,11 +90,10 @@ export default function AdminDashboard() {
 		load();
 	}, [load]);
 
-	// ── Derived metrics ───────────────────────────────────────────────────────
+	// â”€â”€ Derived metrics â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-	const activeBookings = bookings.filter((b) => ACTIVE_STATUSES.includes(b.statusLabel?.replace(/ /g, '')));
-	const pendingCount = bookings.filter((b) => b.statusLabel?.replace(/ /g, '') === 'Pending').length;
-	const needsAction = bookings.filter((b) => ['Pending', 'Confirmed', 'QualityCheck'].includes(b.statusLabel?.replace(/ /g, ''))).length;
+	const activeBookings = bookings.filter((b) => ADMIN_DASHBOARD_ACTIVE_BOOKING_STATUSES.includes(normalizeStatusKey(b.statusLabel)));
+	const needsAction = bookings.filter((b) => ADMIN_ACTION_REQUIRED_STATUSES.includes(normalizeStatusKey(b.statusLabel))).length;
 
 	const paidInvoices = invoices.filter((i) => i.statusLabel === 'Paid');
 	const unpaidInvoices = invoices.filter((i) => i.statusLabel === 'Unpaid');
@@ -129,18 +107,18 @@ export default function AdminDashboard() {
 
 	return (
 		<div className="dashboard-page">
-			{/* ── Hero ── */}
+			{/* Hero */}
 			<section className="page-hero">
 				<div>
 					<p className="page-kicker">Admin Control Panel</p>
 					<h1>
-						{greeting}, {firstName} 👋
+						{greeting}, {firstName}
 					</h1>
 					<p>Here is what is happening across your garage today.</p>
 				</div>
 			</section>
 
-			{/* ── Metrics ── */}
+			{/* Metrics */}
 			<div className="metric-grid ad-metric-grid">
 				{loading ? (
 					Array.from({ length: 5 }).map((_, i) => <SkeletonMetric key={i} />)
@@ -189,9 +167,9 @@ export default function AdminDashboard() {
 				)}
 			</div>
 
-			{/* ── Two-column body ── */}
+			{/* Two-column body */}
 			<div className="ad-body">
-				{/* ── Recent bookings ── */}
+				{/* Recent bookings */}
 				<div className="ad-panel">
 					<div className="ad-panel__header">
 						<h2 className="ad-panel__title">Recent Bookings</h2>
@@ -221,7 +199,7 @@ export default function AdminDashboard() {
 					</div>
 				</div>
 
-				{/* ── Right column ── */}
+				{/* Right column */}
 				<div className="ad-side">
 					{/* Needs-action panel */}
 					{!loading && needsAction > 0 && (
@@ -232,7 +210,7 @@ export default function AdminDashboard() {
 							</div>
 							<div className="ad-panel__content">
 								{bookings
-									.filter((b) => ['Pending', 'Confirmed', 'QualityCheck'].includes(b.statusLabel?.replace(/ /g, '')))
+									.filter((b) => ADMIN_ACTION_REQUIRED_STATUSES.includes(normalizeStatusKey(b.statusLabel)))
 									.slice(0, 4)
 									.map((b) => (
 										<div key={b.id} className="ad-action-row" onClick={() => navigate(`/admin/bookings/${b.id}`)}>

@@ -1,47 +1,15 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './admin-bookings-page.scss';
 import { adminBookingService } from '../../../app-core/services/admin-booking-service';
 import { toastError } from '../../../app-core/services/toast-service';
-
-// ─── Constants ────────────────────────────────────────────────────────────────
-
-const STATUS_META = {
-	Pending: { bg: '#fff7ed', color: '#c2410c', dot: '#f97316', label: 'Pending' },
-	Confirmed: { bg: '#eff6ff', color: '#1d4ed8', dot: '#3b82f6', label: 'Confirmed' },
-	AssignedToMechanic: { bg: '#f0f9ff', color: '#0369a1', dot: '#0ea5e9', label: 'Assigned' },
-	InProgress: { bg: '#fefce8', color: '#a16207', dot: '#eab308', label: 'In Progress' },
-	WaitingForParts: { bg: '#fdf4ff', color: '#7e22ce', dot: '#a855f7', label: 'Waiting Parts' },
-	QualityCheck: { bg: '#fff7ed', color: '#c2410c', dot: '#f97316', label: 'Quality Check' },
-	Completed: { bg: '#f0fdf4', color: '#15803d', dot: '#22c55e', label: 'Completed' },
-	InvoiceGenerated: { bg: '#fefce8', color: '#854d0e', dot: '#f59e0b', label: 'Invoice Sent' },
-	Paid: { bg: '#f0fdf4', color: '#15803d', dot: '#22c55e', label: 'Paid' },
-	Cancelled: { bg: '#fef2f2', color: '#991b1b', dot: '#ef4444', label: 'Cancelled' },
-};
-
-const FILTERS = [
-	{ key: 'all', label: 'All' },
-	{ key: 'Pending', label: 'Pending' },
-	{ key: 'Confirmed', label: 'Confirmed' },
-	{ key: 'active', label: 'In Progress' },
-	{ key: 'Completed', label: 'Completed' },
-	{ key: 'Paid', label: 'Paid' },
-];
-
-const ACTIVE_STATUSES = ['AssignedToMechanic', 'InProgress', 'WaitingForParts', 'QualityCheck'];
-
-const fmtDate = (d) => (d ? new Date(d).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : '—');
-
-// ─── Sub-components ───────────────────────────────────────────────────────────
+import StatusBadgeBase from '../../../shared/components/status-badge/status-badge';
+import { ADMIN_ACTIVE_BOOKING_STATUSES, ADMIN_BOOKING_FILTERS } from '../../../shared/data-modals/booking-status';
+import { formatDateIN } from '../../../shared/utils/date-formatters';
+import { normalizeStatusKey } from '../../../shared/utils/status';
+import './admin-bookings-page.scss';
 
 function StatusBadge({ status }) {
-	const m = STATUS_META[status] || { bg: '#f3f4f6', color: '#374151', dot: '#9ca3af', label: status };
-	return (
-		<span className="abp-badge" style={{ background: m.bg, color: m.color }}>
-			<span className="abp-badge__dot" style={{ background: m.dot }} />
-			{m.label}
-		</span>
-	);
+	return <StatusBadgeBase className="abp-badge" dotClassName="abp-badge__dot" status={status} variant="compact" />;
 }
 
 function SkeletonCard() {
@@ -54,8 +22,6 @@ function SkeletonCard() {
 		</div>
 	);
 }
-
-// ─── Main Page ────────────────────────────────────────────────────────────────
 
 export default function AdminBookingsPage() {
 	const navigate = useNavigate();
@@ -79,18 +45,40 @@ export default function AdminBookingsPage() {
 		load();
 	}, [load]);
 
-	const filtered = bookings.filter((b) => {
-		if (filter === 'all') return true;
-		if (filter === 'active') return ACTIVE_STATUSES.includes(b.statusLabel?.replace(/ /g, ''));
-		return b.statusLabel?.replace(/ /g, '') === filter || b.statusLabel === FILTERS.find((f) => f.key === filter)?.label;
-	});
+	const filtered = useMemo(
+		() =>
+			bookings.filter((booking) => {
+				if (filter === 'all') return true;
 
-	const count = (key) => {
-		if (key === 'all') return bookings.length;
-		if (key === 'active') return bookings.filter((b) => ACTIVE_STATUSES.includes(b.statusLabel?.replace(/ /g, ''))).length;
-		const f = FILTERS.find((f) => f.key === key);
-		return bookings.filter((b) => b.statusLabel === f?.label || b.statusLabel?.replace(/ /g, '') === key).length;
-	};
+				const statusKey = normalizeStatusKey(booking.statusLabel);
+
+				if (filter === 'active') return ADMIN_ACTIVE_BOOKING_STATUSES.includes(statusKey);
+
+				return statusKey === filter || booking.statusLabel === ADMIN_BOOKING_FILTERS.find((item) => item.key === filter)?.label;
+			}),
+		[bookings, filter]
+	);
+
+	const filterCounts = useMemo(() => {
+		const counts = { all: bookings.length };
+
+		ADMIN_BOOKING_FILTERS.forEach(({ key, label }) => {
+			if (key === 'all') return;
+
+			if (key === 'active') {
+				counts[key] = bookings.filter((booking) =>
+					ADMIN_ACTIVE_BOOKING_STATUSES.includes(normalizeStatusKey(booking.statusLabel))
+				).length;
+				return;
+			}
+
+			counts[key] = bookings.filter(
+				(booking) => booking.statusLabel === label || normalizeStatusKey(booking.statusLabel) === key
+			).length;
+		});
+
+		return counts;
+	}, [bookings]);
 
 	return (
 		<div className="dashboard-page">
@@ -104,21 +92,19 @@ export default function AdminBookingsPage() {
 				</div>
 			</section>
 
-			{/* Filters */}
 			<div className="abp-filters">
-				{FILTERS.map((f) => (
+				{ADMIN_BOOKING_FILTERS.map((item) => (
 					<button
-						key={f.key}
-						className={`abp-filter-btn ${filter === f.key ? 'abp-filter-btn--active' : ''}`}
-						onClick={() => setFilter(f.key)}
+						key={item.key}
+						className={`abp-filter-btn ${filter === item.key ? 'abp-filter-btn--active' : ''}`}
+						onClick={() => setFilter(item.key)}
 					>
-						{f.label}
-						{!loading && <span className="abp-filter-count">{count(f.key)}</span>}
+						{item.label}
+						{!loading && <span className="abp-filter-count">{filterCounts[item.key] ?? 0}</span>}
 					</button>
 				))}
 			</div>
 
-			{/* List */}
 			<div className="abp-list">
 				{loading ? (
 					Array.from({ length: 4 }).map((_, i) => <SkeletonCard key={i} />)
@@ -129,29 +115,29 @@ export default function AdminBookingsPage() {
 						<p>No bookings match this filter.</p>
 					</div>
 				) : (
-					filtered.map((b) => (
-						<div key={b.id} className="abp-card" onClick={() => navigate(`/admin/bookings/${b.id}`)}>
+					filtered.map((booking) => (
+						<div key={booking.id} className="abp-card" onClick={() => navigate(`/admin/bookings/${booking.id}`)}>
 							<div className="abp-card__top">
 								<div className="abp-card__info">
-									<h3 className="abp-card__service">{b.serviceType?.name}</h3>
+									<h3 className="abp-card__service">{booking.serviceType?.name}</h3>
 									<p className="abp-card__customer">
-										👤 {b.customerName || 'Customer'} · {b.customerEmail}
+										👤 {booking.customerName || 'Customer'} · {booking.customerEmail}
 									</p>
 									<p className="abp-card__vehicle">
-										🚗 {b.vehicle?.make} {b.vehicle?.model} · {b.vehicle?.licensePlate}
+										🚗 {booking.vehicle?.make} {booking.vehicle?.model} · {booking.vehicle?.licensePlate}
 									</p>
 								</div>
-								<StatusBadge status={b.statusLabel?.replace(/ /g, '')} />
+								<StatusBadge status={booking.statusLabel} />
 							</div>
 
 							<div className="abp-card__meta">
-								<span>📅 {fmtDate(b.scheduledDate)}</span>
-								{b.assignedMechanicName && <span>🔧 {b.assignedMechanicName}</span>}
-								<span>₹{b.serviceType?.basePrice}</span>
+								<span>📅 {formatDateIN(booking.scheduledDate)}</span>
+								{booking.assignedMechanicName && <span>🔧 {booking.assignedMechanicName}</span>}
+								<span>₹{booking.serviceType?.basePrice}</span>
 							</div>
 
-							<div className="abp-card__footer" onClick={(e) => e.stopPropagation()}>
-								<button className="abp-view-btn" onClick={() => navigate(`/admin/bookings/${b.id}`)}>
+							<div className="abp-card__footer" onClick={(event) => event.stopPropagation()}>
+								<button className="abp-view-btn" onClick={() => navigate(`/admin/bookings/${booking.id}`)}>
 									Manage →
 								</button>
 							</div>

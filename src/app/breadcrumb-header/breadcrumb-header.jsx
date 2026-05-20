@@ -1,9 +1,8 @@
+import { useMemo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import './breadcrumb-header.scss';
 
-// ─── Every valid route from App.jsx mapped to a display label ─────────────────
 const ROUTE_MAP = {
-	// customer
 	'/customer/dashboard': 'Dashboard',
 	'/customer/vehicles': 'Vehicles',
 	'/customer/bookings': 'Bookings',
@@ -12,7 +11,6 @@ const ROUTE_MAP = {
 	'/customer/invoices': 'Invoices',
 	'/customer/details': 'Profile',
 
-	// admin
 	'/admin/dashboard': 'Dashboard',
 	'/admin/bookings': 'Bookings',
 	'/admin/bookings/:id': 'Booking Detail',
@@ -22,7 +20,6 @@ const ROUTE_MAP = {
 	'/admin/customers': 'All Customers',
 	'/admin/customer/:id': 'Customer Detail',
 
-	// mechanic
 	'/mechanic/dashboard': 'Dashboard',
 	'/mechanic/jobs': 'Assigned Jobs',
 	'/mechanic/jobs/:id': 'Job Detail',
@@ -31,8 +28,6 @@ const ROUTE_MAP = {
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-// Resolves an actual path like /customer/bookings/abc-uuid
-// to a label from ROUTE_MAP — returns null if path is not valid.
 const resolveLabel = (path) => {
 	if (ROUTE_MAP[path]) return ROUTE_MAP[path];
 
@@ -43,7 +38,7 @@ const resolveLabel = (path) => {
 		if (ROUTE_MAP[pattern]) return ROUTE_MAP[pattern];
 	}
 
-	return null; // Not a valid route — never link to it
+	return null;
 };
 
 const getHomeLink = (pathname) => {
@@ -56,18 +51,21 @@ export default function BreadcrumbHeader() {
 	const { pathname } = useLocation();
 	const homeLink = getHomeLink(pathname);
 
-	const allSegments = pathname.split('/').filter(Boolean);
+	const crumbs = useMemo(() => {
+		const allSegments = pathname.split('/').filter(Boolean);
+		const nextCrumbs = [];
 
-	// Build crumbs — skip role prefix (index 0), only include valid routes
-	const crumbs = [];
-	allSegments.forEach((_, index) => {
-		if (index === 0) return; // skip customer / admin / mechanic
+		allSegments.forEach((_, index) => {
+			if (index === 0) return;
 
-		const fullPath = '/' + allSegments.slice(0, index + 1).join('/');
-		const label = resolveLabel(fullPath);
+			const fullPath = '/' + allSegments.slice(0, index + 1).join('/');
+			const label = resolveLabel(fullPath);
 
-		if (label) crumbs.push({ label, path: fullPath });
-	});
+			if (label) nextCrumbs.push({ label, path: fullPath });
+		});
+
+		return nextCrumbs;
+	}, [pathname]);
 
 	return (
 		<div className="breadcrumb-bar">
@@ -81,7 +79,7 @@ export default function BreadcrumbHeader() {
 					return (
 						<span key={crumb.path} className="bc-item">
 							<span className="bc-sep" aria-hidden="true">
-								›
+								&rsaquo;
 							</span>
 							{isLast ? (
 								<span className="bc-current" aria-current="page">

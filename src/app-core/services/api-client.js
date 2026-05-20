@@ -65,6 +65,11 @@ const sendRequest = (url, options, token) =>
 
 const request = async (url, options = {}, retried = false) => {
 	const token = getStoredToken();
+
+	if (!token) {
+		throw new Error('Session expired. Please log in again.');
+	}
+
 	let response = await sendRequest(url, options, token);
 
 	if (response.status === 403) {

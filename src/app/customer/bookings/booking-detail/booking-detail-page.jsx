@@ -4,9 +4,10 @@ import vehicleService from '../../../../app-core/services/vehicle-service';
 import { bookingService, serviceTypeService } from '../../../../app-core/services/booking-service';
 import { toastError, toastSuccess } from '../../../../app-core/services/toast-service';
 import './booking-details-page.scss';
-import SideDrawer from '../../../../app-core/shared/side-drawer/side-drawer';
+import SideDrawer from '../../../../shared/components/side-drawer/side-drawer';
+import { normalizeStatusKey } from '../../../../shared/utils/status';
 
-const normalise = (s) => s?.replace(/ /g, '') ?? '';
+const normalise = normalizeStatusKey;
 
 const TODAY = new Date().toISOString().split('T')[0];
 

@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { logoutUser } from '../../app-core/actions/auth-actions';
 import { setAuthInitialized, setLoggedUserData, setThemeData } from '../../app-core/reducers/common-slice';
 import { setStoredToken, withAuthRequestDefaults } from '../../app-core/services/auth-request';
-import ThemeToggler from '../../app-core/shared/theme-toggler/theme-toggler';
+import ThemeToggler from '../../shared/components/theme-toggler/theme-toggler';
 import './login-page.scss';
 
 const BASE_URL = import.meta.env.VITE_AUTH_BASE_URL;

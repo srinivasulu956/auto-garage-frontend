@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { memo, useCallback, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { NavLink, useLocation } from 'react-router-dom';
 import { menuConfig } from './menu-config';
@@ -37,17 +37,17 @@ const SideNavbar = ({ expanded, parentCallbackForExpandState }) => {
 
 	const menus = useMemo(() => menuConfig[role] || [], [role]);
 
-	const openMenuAtLevel = (level, itemId) => {
+	const openMenuAtLevel = useCallback((level, itemId) => {
 		setOpenMenuPath((prev) => [...prev.slice(0, level), itemId]);
-	};
+	}, []);
 
-	const closeMenuFromLevel = (level) => {
+	const closeMenuFromLevel = useCallback((level) => {
 		setOpenMenuPath((prev) => prev.slice(0, level));
-	};
+	}, []);
 
-	const closeAllMenus = () => {
+	const closeAllMenus = useCallback(() => {
 		setOpenMenuPath([]);
-	};
+	}, []);
 
 	const renderMenu = (items, level = 0) =>
 		items.map((item) => {
@@ -118,4 +118,4 @@ const SideNavbar = ({ expanded, parentCallbackForExpandState }) => {
 	);
 };
 
-export default SideNavbar;
+export default memo(SideNavbar);

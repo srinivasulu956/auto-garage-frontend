@@ -5,11 +5,11 @@ import prettierPlugin from 'eslint-plugin-prettier';
 import importPlugin from 'eslint-plugin-import';
 
 export default [
+	{ ignores: ['dist/**', 'node_modules/**', '.eslintrc.cjs'] },
 	{ files: ['**/*.{js,mjs,cjs,jsx}'] },
 	pluginJs.configs.recommended,
 	pluginReactConfig,
 	{
-		ignores: ['dist', '.eslintrc.cjs'],
 		languageOptions: {
 			globals: globals.browser,
 			parserOptions: {

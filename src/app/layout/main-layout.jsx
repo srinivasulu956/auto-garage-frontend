@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import SideNavbar from '../side-nav-bar/side-nav-bar';
 import './main-layout.scss';
@@ -8,6 +8,7 @@ import BreadcrumbHeader from '../breadcrumb-header/breadcrumb-header';
 
 function MainLayout() {
 	const [expanded, setExpanded] = useState(true);
+	const handleExpandToggle = useCallback(() => setExpanded((prev) => !prev), []);
 
 	return (
 		<div className={`main-layout-wrapper ${expanded ? 'layout-expanded' : ''}`}>
@@ -16,7 +17,7 @@ function MainLayout() {
 			</div>
 			<div className="layout-body">
 				<div className="side-navbar-wrapper">
-					<SideNavbar expanded={expanded} parentCallbackForExpandState={() => setExpanded((prev) => !prev)} />
+					<SideNavbar expanded={expanded} parentCallbackForExpandState={handleExpandToggle} />
 				</div>
 				<div className="main-content-wrapper">
 					<BreadcrumbHeader />

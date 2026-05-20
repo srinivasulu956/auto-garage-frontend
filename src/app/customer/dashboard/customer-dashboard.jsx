@@ -1,37 +1,22 @@
-import { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { bookingService } from '../../../app-core/services/booking-service';
 import vehicleService from '../../../app-core/services/vehicle-service';
 import { toastError } from '../../../app-core/services/toast-service';
+import StatusBadgeBase from '../../../shared/components/status-badge/status-badge';
+import { CUSTOMER_DASHBOARD_INACTIVE_BOOKING_STATUSES } from '../../../shared/data-modals/booking-status';
+import { formatDateIN } from '../../../shared/utils/date-formatters';
+import { normalizeStatusKey } from '../../../shared/utils/status';
 import './customer-dashboard.scss';
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-const normalise = (s) => s?.replace(/ /g, '') ?? '';
-
-const STATUS_STYLES = {
-	Pending: { bg: '#fff7ed', color: '#c2410c', label: 'Pending' },
-	Confirmed: { bg: '#eff6ff', color: '#1d4ed8', label: 'Confirmed' },
-	AssignedToMechanic: { bg: '#f0f9ff', color: '#0369a1', label: 'Assigned' },
-	InProgress: { bg: '#fefce8', color: '#a16207', label: 'In Progress' },
-	WaitingForParts: { bg: '#fdf4ff', color: '#7e22ce', label: 'Waiting for Parts' },
-	QualityCheck: { bg: '#fff7ed', color: '#c2410c', label: 'Quality Check' },
-	Completed: { bg: '#f0fdf4', color: '#15803d', label: 'Completed' },
-	InvoiceGenerated: { bg: '#fefce8', color: '#854d0e', label: 'Invoice Ready' },
-	Paid: { bg: '#f0fdf4', color: '#15803d', label: 'Paid' },
-	Cancelled: { bg: '#fef2f2', color: '#991b1b', label: 'Cancelled' },
-};
+const normalise = normalizeStatusKey;
 
 function StatusBadge({ statusLabel }) {
-	const style = STATUS_STYLES[normalise(statusLabel)] || { bg: '#f3f4f6', color: '#374151', label: statusLabel };
-	return (
-		<span className="cd-badge" style={{ background: style.bg, color: style.color }}>
-			{style.label}
-		</span>
-	);
+	return <StatusBadgeBase className="cd-badge" status={statusLabel} variant="customerDashboard" showDot={false} />;
 }
-
 function MetricCard({ icon, label, value, sub, onClick }) {
 	return (
 		<div className={`metric-card cd-metric ${onClick ? 'cd-metric--clickable' : ''}`} onClick={onClick}>
@@ -55,7 +40,7 @@ function SkeletonRow() {
 	);
 }
 
-// ─── Main Page ────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Main Page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const CustomerDashboard = () => {
 	const navigate = useNavigate();
@@ -85,7 +70,7 @@ const CustomerDashboard = () => {
 	}, []);
 
 	// Active = everything except Cancelled and Paid
-	const activeBookings = bookings.filter((b) => !['Cancelled', 'Paid'].includes(normalise(b.statusLabel)));
+	const activeBookings = bookings.filter((b) => !CUSTOMER_DASHBOARD_INACTIVE_BOOKING_STATUSES.includes(normalise(b.statusLabel)));
 
 	// Pending invoice = InvoiceGenerated (awaiting customer payment)
 	const pendingInvoices = bookings.filter((b) => normalise(b.statusLabel) === 'InvoiceGenerated');
@@ -97,7 +82,7 @@ const CustomerDashboard = () => {
 			<section className="page-hero">
 				<div>
 					<p className="page-kicker">Customer Dashboard</p>
-					<h1>Welcome back, {firstName} 👋</h1>
+					<h1>Welcome back, {firstName} </h1>
 					<p>Your garage at a glance — vehicles, bookings, and service activity.</p>
 				</div>
 				<button className="cd-cta" onClick={() => navigate('/customer/bookings/new')}>
@@ -160,11 +145,7 @@ const CustomerDashboard = () => {
 									</span>
 								</div>
 								<div className="cd-booking-row__date">
-									{new Date(b.scheduledDate).toLocaleDateString('en-IN', {
-										day: 'numeric',
-										month: 'short',
-										year: 'numeric',
-									})}
+									{formatDateIN(b.scheduledDate, { day: 'numeric', month: 'short', year: 'numeric' })}
 								</div>
 								<StatusBadge statusLabel={b.statusLabel} />
 							</div>

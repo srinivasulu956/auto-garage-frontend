@@ -1,35 +1,21 @@
-import { useEffect, useState, useCallback } from 'react';
+﻿import { useEffect, useState, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import './mechanic-dashboard.scss';
 import { toastError } from '../../../app-core/services/toast-service';
 import { mechanicJobService } from '../../../app-core/services/mechanic-service';
+import StatusBadgeBase from '../../../shared/components/status-badge/status-badge';
+import { MECHANIC_ACTIVE_JOB_STATUSES, MECHANIC_DONE_JOB_STATUSES } from '../../../shared/data-modals/booking-status';
+import { formatDateIN } from '../../../shared/utils/date-formatters';
+import { normalizeStatusKey } from '../../../shared/utils/status';
 
-// ─── Constants ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Constants â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-const STATUS_META = {
-	AssignedToMechanic: { bg: '#f0f9ff', color: '#0369a1', dot: '#0ea5e9', label: 'Assigned' },
-	InProgress: { bg: '#fefce8', color: '#a16207', dot: '#eab308', label: 'In Progress' },
-	WaitingForParts: { bg: '#fdf4ff', color: '#7e22ce', dot: '#a855f7', label: 'Waiting for Parts' },
-	QualityCheck: { bg: '#fff7ed', color: '#c2410c', dot: '#f97316', label: 'Quality Check' },
-	Completed: { bg: '#f0fdf4', color: '#15803d', dot: '#22c55e', label: 'Completed' },
-	Paid: { bg: '#f0fdf4', color: '#15803d', dot: '#22c55e', label: 'Paid' },
-};
-
-const fmtDate = (d) => (d ? new Date(d).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : '—');
-
-// ─── Sub-components ────────────────────────────────────────────────────────────
+const fmtDate = formatDateIN;
 
 function StatusBadge({ status }) {
-	const m = STATUS_META[status] || { bg: '#f3f4f6', color: '#374151', dot: '#9ca3af', label: status };
-	return (
-		<span className="mcd-badge" style={{ background: m.bg, color: m.color }}>
-			<span className="mcd-badge__dot" style={{ background: m.dot }} />
-			{m.label}
-		</span>
-	);
+	return <StatusBadgeBase className="mcd-badge" dotClassName="mcd-badge__dot" status={status} variant="mechanic" />;
 }
-
 function MetricCard({ icon, label, value, accent, onClick }) {
 	return (
 		<div
@@ -57,7 +43,7 @@ function SkeletonRow() {
 	);
 }
 
-// ─── Main Page ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Main Page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 export default function MechanicDashboard() {
 	const navigate = useNavigate();
@@ -83,26 +69,24 @@ export default function MechanicDashboard() {
 		load();
 	}, [load]);
 
-	// ── Derived stats ──────────────────────────────────────────────────────────
-	const activeJobs = jobs.filter((j) =>
-		['AssignedToMechanic', 'InProgress', 'WaitingForParts'].includes(j.statusLabel?.replace(/ /g, ''))
-	);
-	const inQC = jobs.filter((j) => j.statusLabel?.replace(/ /g, '') === 'QualityCheck');
-	const completed = jobs.filter((j) => ['Completed', 'Paid'].includes(j.statusLabel?.replace(/ /g, '')));
+	// â”€â”€ Derived stats â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+	const activeJobs = jobs.filter((j) => MECHANIC_ACTIVE_JOB_STATUSES.includes(normalizeStatusKey(j.statusLabel)));
+	const inQC = jobs.filter((j) => normalizeStatusKey(j.statusLabel) === 'QualityCheck');
+	const completed = jobs.filter((j) => MECHANIC_DONE_JOB_STATUSES.includes(normalizeStatusKey(j.statusLabel)));
 	const recentJobs = [...jobs].sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)).slice(0, 5);
 
 	return (
 		<div className="dashboard-page">
-			{/* ── Hero ── */}
+			{/* Hero */}
 			<section className="page-hero compact">
 				<div>
 					<p className="page-kicker">Workshop</p>
-					<h1>Welcome back, {firstName} 👋</h1>
+					<h1>Welcome back, {firstName} </h1>
 					<p>Here is a snapshot of your current workload.</p>
 				</div>
 			</section>
 
-			{/* ── Quick actions ── */}
+			{/* Quick actions */}
 			<div className="mcd-quick-grid">
 				<button className="mcd-quick-card" onClick={() => navigate('/mechanic/jobs')}>
 					<span className="mcd-quick-card__icon">📋</span>
@@ -114,7 +98,7 @@ export default function MechanicDashboard() {
 				</button>
 			</div>
 
-			{/* ── Metrics ── */}
+			{/* Metrics */}
 			<div className="metric-grid mcd-metric-grid">
 				<MetricCard
 					icon="🔧"
@@ -134,7 +118,7 @@ export default function MechanicDashboard() {
 				<MetricCard icon="📋" label="Total Assigned" value={loading ? '…' : jobs.length} accent="#a855f7" />
 			</div>
 
-			{/* ── Recent Jobs ── */}
+			{/* Recent Jobs */}
 			<div className="mcd-panel">
 				<div className="mcd-panel__header">
 					<h2>Recent Jobs</h2>
@@ -154,7 +138,7 @@ export default function MechanicDashboard() {
 				) : (
 					<div className="mcd-job-list">
 						{recentJobs.map((job) => {
-							const raw = job.statusLabel?.replace(/ /g, '');
+							const raw = normalizeStatusKey(job.statusLabel);
 							return (
 								<div
 									key={job.id}

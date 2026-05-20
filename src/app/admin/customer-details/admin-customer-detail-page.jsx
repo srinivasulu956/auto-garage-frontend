@@ -2,37 +2,18 @@ import { useEffect, useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { adminCustomerService } from '../../../app-core/services/admin-user-service';
 import { toastError } from '../../../app-core/services/toast-service';
+import { getBookingStatusMeta } from '../../../shared/data-modals/booking-status';
+import { FUEL_META } from '../../../shared/data-modals/vehicle-data';
+import { formatCurrencyIN } from '../../../shared/utils/currency-formatters';
+import { formatDateIN } from '../../../shared/utils/date-formatters';
+import { normalizeStatusKey } from '../../../shared/utils/status';
 import './admin-customer-detail-page.scss';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-const normalise = (s) => s?.replace(/ /g, '') ?? '';
-
-const FUEL_META = {
-	Petrol: { color: '#f59e0b' },
-	Diesel: { color: '#6b7280' },
-	Electric: { color: '#10b981' },
-	Hybrid: { color: '#3b82f6' },
-	CNG: { color: '#8b5cf6' },
-};
-
-// ✅ FIX: Complete status map covering all possible statuses
-const STATUS_STYLES = {
-	Pending: { bg: '#fff7ed', color: '#c2410c', label: 'Pending' },
-	Confirmed: { bg: '#eff6ff', color: '#1d4ed8', label: 'Confirmed' },
-	AssignedToMechanic: { bg: '#f0f9ff', color: '#0369a1', label: 'Assigned' },
-	InProgress: { bg: '#fefce8', color: '#a16207', label: 'In Progress' },
-	WaitingForParts: { bg: '#fdf4ff', color: '#7e22ce', label: 'Waiting for Parts' },
-	QualityCheck: { bg: '#fff7ed', color: '#c2410c', label: 'Quality Check' },
-	Completed: { bg: '#f0fdf4', color: '#15803d', label: 'Completed' },
-	InvoiceGenerated: { bg: '#fefce8', color: '#854d0e', label: 'Invoice Sent' },
-	Paid: { bg: '#f0fdf4', color: '#15803d', label: 'Paid' },
-	Cancelled: { bg: '#fef2f2', color: '#991b1b', label: 'Cancelled' },
-};
-
-const fmtDate = (d) => (d ? new Date(d).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : '—');
-
-const fmtCurrency = (n) => '₹' + (n || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const normalise = normalizeStatusKey;
+const fmtDate = formatDateIN;
+const fmtCurrency = (value) => formatCurrencyIN(value, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
@@ -132,7 +113,7 @@ export default function AdminCustomerDetailPage() {
 					<div className="acd-list">
 						{bookings.map((b, i) => {
 							const key = normalise(b.statusLabel);
-							const style = STATUS_STYLES[key] || STATUS_STYLES.Pending;
+							const style = getBookingStatusMeta(key, 'compact');
 							return (
 								<div
 									key={b.id}

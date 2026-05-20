@@ -1,25 +1,20 @@
 import { useEffect, useState, useCallback } from 'react';
 import { adminStaffService } from '../../../app-core/services/admin-user-service';
 import { toastError, toastSuccess } from '../../../app-core/services/toast-service';
-import SideDrawer from '../../../app-core/shared/side-drawer/side-drawer';
+import SideDrawer from '../../../shared/components/side-drawer/side-drawer';
+import { EMPTY_STAFF_FORM, getRoleMeta } from '../../../shared/data-modals/staff-role';
+import { formatDateIN } from '../../../shared/utils/date-formatters';
 import './admin-staff-page.scss';
 import { useSelector } from 'react-redux';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const ROLE_META = {
-	Admin: { bg: '#eff6ff', color: '#1d4ed8', label: 'Admin' },
-	Mechanic: { bg: '#fdf4ff', color: '#7e22ce', label: 'Mechanic' },
-};
-
-const EMPTY_FORM = { firstName: '', lastName: '', email: '', password: '', role: 'Mechanic' };
-
-const fmtDate = (d) => (d ? new Date(d).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : '—');
+const fmtDate = formatDateIN;
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
 function RoleBadge({ role }) {
-	const m = ROLE_META[role] || { bg: '#f3f4f6', color: '#374151', label: role };
+	const m = getRoleMeta(role);
 	return (
 		<span className="sp-role-badge" style={{ background: m.bg, color: m.color }}>
 			{m.label}
@@ -68,7 +63,7 @@ export default function AdminStaffPage() {
 
 	const [addOpen, setAddOpen] = useState(false);
 	const [toggleTarget, setToggleTarget] = useState(null);
-	const [form, setForm] = useState(EMPTY_FORM);
+	const [form, setForm] = useState(EMPTY_STAFF_FORM);
 	const [formErrors, setFormErrors] = useState({});
 
 	const loggedInEmail = useSelector((state) => state.commonState.loggedUserData?.user?.email);
@@ -133,7 +128,7 @@ export default function AdminStaffPage() {
 			});
 			toastSuccess(`${form.role} account created`);
 			setAddOpen(false);
-			setForm(EMPTY_FORM);
+			setForm(EMPTY_STAFF_FORM);
 			await load();
 		} catch (err) {
 			toastError(err.message || 'Failed to create staff account');
@@ -172,7 +167,7 @@ export default function AdminStaffPage() {
 				<button
 					className="sp-add-btn"
 					onClick={() => {
-						setForm(EMPTY_FORM);
+						setForm(EMPTY_STAFF_FORM);
 						setAddOpen(true);
 					}}
 				>

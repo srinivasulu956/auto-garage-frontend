@@ -4,7 +4,7 @@ import './admin-details-page.scss';
 import { updateUserProfile } from '../../../app-core/services/user-services';
 import { setLoggedUserData, setThemeData } from '../../../app-core/reducers/common-slice';
 import { toastError, toastSuccess } from '../../../app-core/services/toast-service';
-import SideDrawer from '../../../app-core/shared/side-drawer/side-drawer';
+import SideDrawer from '../../../shared/components/side-drawer/side-drawer';
 
 const AdminDetailsPage = () => {
 	const userData = useSelector((state) => state.commonState.loggedUserData);
