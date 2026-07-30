@@ -1,73 +1,110 @@
-# React + Vite
+# AutoFix — Garage Management Portal
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A garage management system for customers, admins and mechanics — with an **AI assistant that lets customers run the entire portal by conversation** instead of navigating tabs and filling forms.
 
-Currently, two official plugins are available:
+React 19 + Vite frontend. The API lives in a separate repository, `Auto-Garage-Solution` (ASP.NET Core, .NET 10).
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+---
 
-## React Compiler
+## What it does
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Three roles share one workflow. A booking moves through a ten-stage lifecycle from _Pending_ to _Paid_, and each role can only advance the stages it owns.
 
-## Expanding the ESLint configuration
+| Role         | What they do                                                                               |
+| ------------ | ------------------------------------------------------------------------------------------ |
+| **Customer** | Register vehicles, book services, track repair progress, view and pay invoices             |
+| **Admin**    | Confirm bookings, assign mechanics, manage the service catalogue and staff, raise invoices |
+| **Mechanic** | See assigned jobs, log work and parts, advance repair status                               |
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### The AI assistant
 
-# AutoGarage Frontend
+A customer types _"my brakes are squealing"_ and the assistant reads the **live service catalogue**, recommends the right service at the real price, checks which of their vehicles is free, and prepares the booking for one-click approval.
 
-A garage management web app built with React + Vite.
+It runs entirely server-side using **LLM tool calling**, and it is deliberately constrained:
 
-## Tech Stack
+- It **cannot see another customer's data** — no tool accepts a customer id; identity is injected from the JWT
+- It **cannot write anything** without an explicit human confirmation click
+- It **cannot take payments** or advance a booking past _Pending_
 
-- React 18
-- Redux
-- Bootstrap + SCSS
-- Vite
+→ **[Read the AI implementation guide](docs/05-ai-assistant.md)**
 
-## Prerequisites
+---
 
-- [Node.js](https://nodejs.org) (v18 or above)
+## Documentation
 
-## Getting Started
+Full documentation lives in [`docs/`](docs/README.md).
 
-### Step 1: Clone the repo
+| Document                                        | Contents                                                  |
+| ----------------------------------------------- | --------------------------------------------------------- |
+| [Project Overview](docs/01-project-overview.md) | The product, roles, booking lifecycle, end-to-end journey |
+| [Architecture](docs/02-architecture.md)         | System design, auth flow, data model, key trade-offs      |
+| [Backend Guide](docs/03-backend.md)             | .NET structure, layering, full API reference              |
+| [Frontend Guide](docs/04-frontend.md)           | React structure, routing, state, theming                  |
+| [**AI Assistant**](docs/05-ai-assistant.md)     | **Tool calling, safety design, real debugging stories**   |
+| [Setup & Run](docs/06-setup-and-run.md)         | Running it on a fresh machine                             |
 
-git clone https://github.com/srinivasulu956/auto-garage-frontend.git
+<!-- | [KT Guide](docs/07-KT-guide.md) | Talking points and honest weaknesses | -->
 
-### Step 2: Install dependencies
+---
 
-cd AutoFix
+## Tech stack
+
+|             |                                             |
+| ----------- | ------------------------------------------- |
+| **UI**      | React 19, React Router 7, Bootstrap 5, SCSS |
+| **State**   | Redux Toolkit                               |
+| **Forms**   | react-hook-form                             |
+| **Build**   | Vite 8                                      |
+| **Quality** | ESLint 9 + Prettier                         |
+
+Route-level code splitting via `lazy()`, so a customer never downloads admin bundles. Theming uses CSS custom properties, so light and dark mode swap values rather than stylesheets.
+
+---
+
+## Getting started
+
+**Prerequisites:** Node.js 20+, and the backend running on `https://localhost:7224`.
+
+```bash
 npm install
+```
 
-### Step 3: Configure environment
+Create `.env` from the template:
 
-Create a `.env.local` file in the root folder:
+```bash
+cp .env.example .env
+```
+
+```
 VITE_API_BASE_URL=https://localhost:7224/api
+VITE_AUTH_BASE_URL=https://localhost:7224/api/Auth
+```
 
-> Make sure the backend is running on port 7224
-> before starting the frontend.
+> ⚠️ **Never put an AI provider key in a `VITE_`-prefixed variable.** Vite inlines them into the JavaScript bundle at build time, making them readable by anyone. All AI calls go through the backend.
 
-### Step 4: Run the project
-
+```bash
 npm run dev
+```
 
-App runs at: http://localhost:7600
+Runs at **http://localhost:7600**. Vite proxies `/api` to the backend so requests appear same-origin, which is what lets the HTTP-only refresh cookie work in development.
 
-## Roles
+Full instructions, including database setup and first-run steps: **[Setup & Run](docs/06-setup-and-run.md)**.
 
-| Role     | Features                                     |
-| -------- | -------------------------------------------- |
-| Admin    | Dashboard, bookings, users, mechanics        |
-| Customer | Book service, manage vehicles, view invoices |
-| Mechanic | View assigned jobs, update job status        |
+### Scripts
 
-## Branching Strategy
+```bash
+npm run dev           # dev server
+npm run build         # production build
+npm run lint          # eslint
+npm run preview       # preview a production build
+```
 
-- `main` — stable production code
-- `develop` — active development branch
-- `feature/*` — individual feature branches
+---
 
-Always raise a PR to `develop`. Never push directly to
-`main` or `develop`.
+## Branching
+
+- `main` — stable
+- `develop` — active development
+- `feature/*` — individual features
+
+Always raise a PR to `develop`. Never push directly to `main` or `develop`.

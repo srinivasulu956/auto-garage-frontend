@@ -7,6 +7,7 @@ import AuthInitializer from './app/auth-provider/auth-initializer';
 import MainLayout from './app/layout/main-layout';
 import ProtectedRoute from './app/routes/protected-route';
 import LoadingPage from './shared/components/loading-page/loading-page';
+import AIChat from './app/customer/AIChat/AIChat';
 
 const Login = lazy(() => import('./app/login/login-page'));
 const PageNotFound = lazy(() => import('./app/page-not-found/page-not-found'));
@@ -60,6 +61,7 @@ export const router = createBrowserRouter([
 		element: (
 			<ProtectedRoute allowedRoles={['customer']}>
 				<MainLayout />
+				<AIChat />
 			</ProtectedRoute>
 		),
 		children: [
