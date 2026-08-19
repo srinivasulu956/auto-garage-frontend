@@ -28,10 +28,24 @@ export default defineConfig({
 		open: true,
 		port: 7600,
 		proxy: {
-			// Proxies all /api requests to the backend
-			// This makes cookies work in dev since requests appear same-origin
+			// Two backends now. The order of these keys matters: Vite tests them in turn and
+			// the first prefix match wins, so the more specific /api/Auth must come first —
+			// swap them and every login would be sent to the garage API and 404.
+			//
+			// The frontend itself knows nothing about the split. It still calls /api/Auth and
+			// /api exactly as before, and this is what fans them out. In production the same
+			// job belongs to a reverse proxy or an API gateway.
+			'/api/Auth': {
+				target: 'https://localhost:7300', // ← Auth service
+				changeOrigin: true,
+				secure: false,
+			},
+
+			// Everything else — bookings, vehicles, invoices, the AI assistant.
+			// Proxied rather than called directly so requests look same-origin, which is what
+			// lets the HTTP-only refresh cookie work in dev.
 			'/api': {
-				target: 'https://localhost:7224', // ← your backend URL
+				target: 'https://localhost:7224', // ← Garage API
 				changeOrigin: true,
 				secure: false, // ← accept self-signed certificate on localhost
 			},

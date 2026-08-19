@@ -1,4 +1,4 @@
-import api from './api-client';
+import api, { authApi } from './api-client';
 
 const BASE = '/admin';
 
@@ -25,8 +25,10 @@ export const adminStaffService = {
 	toggleActive(id) {
 		return api.patch(`${BASE}/staff/${id}/toggle-active`);
 	},
-	// Staff creation goes through Auth — POST /api/auth/register-staff
+	// Creating a staff account writes a user, so it belongs to the Auth service — the
+	// garage API cannot create users any more. Everything above it on this screen is
+	// still the garage API, which reads staff through its auth gateway.
 	registerStaff(data) {
-		return api.post('/Auth/register-staff', data);
+		return authApi.post('/register-staff', data);
 	},
 };

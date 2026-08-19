@@ -181,7 +181,7 @@ Every request goes through `src/app-core/services/api-client.js`. Feature servic
 | `admin-booking-service.js` | Admin bookings                                       |
 | `admin-user-service.js`    | Admin users and staff                                |
 | `mechanic-service.js`      | Mechanic jobs and work logs                          |
-| `assistant-service.js`     | AI assistant                                         |
+| `assistant-service.js`     | AI assistant, including the model-provider toggle    |
 | `toast-service.js`         | Notifications                                        |
 
 ### What `api-client` handles
@@ -224,7 +224,7 @@ Without this, a dashboard firing four requests when the token expires sends four
 | **Booking detail** | Full status timeline — who changed what, when                                    |
 | **Invoices**       | List, line-item detail, pay                                                      |
 | **Details**        | Profile                                                                          |
-| **AIChat**         | The assistant, docked on every screen → [05](05-ai-assistant.md)                 |
+| **AIChat**         | The assistant, docked on every screen, with a Cloud/Local model toggle → [05](05-ai-assistant.md) |
 
 ### Admin
 

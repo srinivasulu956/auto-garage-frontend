@@ -8,7 +8,14 @@ import {
 	setStoredToken,
 } from './auth-request';
 
+// Two backends, two base URLs. Auth is its own service now, so a call's path is no longer
+// enough to say where it goes — the caller has to pick the client.
+//
+// In development both resolve through the Vite proxy and either one would appear to work.
+// In production they are different hosts, and sending an auth call to the garage API is a
+// 404 that only shows up after deployment. Hence two exported clients rather than one.
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const AUTH_URL = import.meta.env.VITE_AUTH_BASE_URL;
 
 let refreshPromise = null;
 
@@ -52,8 +59,8 @@ const getRefreshedToken = async () => {
 	return refreshPromise;
 };
 
-const sendRequest = (url, options, token) =>
-	fetch(`${BASE_URL}${url}`, {
+const sendRequest = (base, url, options, token) =>
+	fetch(`${base}${url}`, {
 		credentials: 'include',
 		...options,
 		headers: {
@@ -63,14 +70,14 @@ const sendRequest = (url, options, token) =>
 		},
 	});
 
-const request = async (url, options = {}, retried = false) => {
+const request = async (base, url, options = {}, retried = false) => {
 	const token = getStoredToken();
 
 	if (!token) {
 		throw new Error('Session expired. Please log in again.');
 	}
 
-	let response = await sendRequest(url, options, token);
+	let response = await sendRequest(base, url, options, token);
 
 	if (response.status === 403) {
 		clearSession();
@@ -92,7 +99,7 @@ const request = async (url, options = {}, retried = false) => {
 		throw new Error('Session expired. Please log in again.');
 	}
 
-	response = await sendRequest(url, options, newToken);
+	response = await sendRequest(base, url, options, newToken);
 
 	if (response.status === 403) {
 		clearSession();
@@ -102,12 +109,26 @@ const request = async (url, options = {}, retried = false) => {
 	return handleResponse(response);
 };
 
-const api = {
-	get: (url) => request(url, { method: 'GET' }),
-	post: (url, data) => request(url, { method: 'POST', body: JSON.stringify(data) }),
-	put: (url, data) => request(url, { method: 'PUT', body: JSON.stringify(data) }),
-	patch: (url, data) => request(url, { method: 'PATCH', body: data ? JSON.stringify(data) : undefined }),
-	delete: (url) => request(url, { method: 'DELETE' }),
-};
+const clientFor = (base) => ({
+	get: (url) => request(base, url, { method: 'GET' }),
+	post: (url, data) => request(base, url, { method: 'POST', body: JSON.stringify(data) }),
+	put: (url, data) => request(base, url, { method: 'PUT', body: JSON.stringify(data) }),
+	patch: (url, data) => request(base, url, { method: 'PATCH', body: data ? JSON.stringify(data) : undefined }),
+	delete: (url) => request(base, url, { method: 'DELETE' }),
+});
 
+/** The garage API — bookings, vehicles, invoices, staff admin, the AI assistant. */
+const api = clientFor(BASE_URL);
+
+/**
+ * The auth service — profile, current user, staff registration. Paths are relative to
+ * the auth base, which already ends in /Auth, so pass '/currentUserData' not
+ * '/Auth/currentUserData'.
+ *
+ * Both clients share the same token handling and the same single-flight refresh, so a
+ * 401 on either one is recovered the same way.
+ */
+const authApi = clientFor(AUTH_URL);
+
+export { authApi };
 export default api;

@@ -162,6 +162,47 @@ $launcher-offset: 24px;
 		flex-shrink: 0;
 	}
 
+	// A segmented control rather than a dropdown: there are two options, both worth
+	// reading at a glance, and the current one should never need a click to discover.
+	.provider-switch {
+		display: flex;
+		flex-shrink: 0;
+		padding: 2px;
+		border: 1px solid var(--border-color);
+		border-radius: 999px;
+		background: var(--surface-color);
+	}
+
+	.provider-option {
+		padding: 0.2rem 0.6rem;
+		border: none;
+		border-radius: 999px;
+		background: transparent;
+		color: var(--muted-text-color);
+		font-size: 0.7rem;
+		font-weight: 600;
+		cursor: pointer;
+		transition:
+			background 0.15s ease,
+			color 0.15s ease;
+
+		&.is-active {
+			background: var(--primary-color);
+			color: #fff;
+		}
+
+		// Ollama not running. Still shown, so the option is discoverable, but plainly
+		// out of reach rather than silently missing.
+		&:disabled {
+			opacity: 0.45;
+			cursor: not-allowed;
+		}
+
+		&:not(.is-active):not(:disabled):hover {
+			color: var(--primary-color);
+		}
+	}
+
 	.icon-btn {
 		padding: 0.3rem 0.55rem;
 		border: 1px solid transparent;
@@ -325,6 +366,14 @@ $launcher-offset: 24px;
 	padding: 0;
 	list-style: none;
 
+	// Which backend answered. Kept quiet by default and only coloured when the answer
+	// came from the local model, because that is the case where the difference in
+	// quality is worth knowing about.
+	.provider-tag.local {
+		border-color: var(--primary-color);
+		color: var(--primary-color);
+	}
+
 	li {
 		padding: 0.15rem 0.5rem;
 		border: 1px solid var(--border-color);
@@ -475,6 +524,24 @@ $launcher-offset: 24px;
 }
 
 // ── Typing indicator ────────────────────────────────────────────────────────
+
+// Said when the cloud allowance ran out mid-conversation and the local model took over.
+.provider-notice {
+	margin: 0.4rem 0 0;
+	padding: 0.4rem 0.6rem;
+	border-left: 2px solid var(--primary-color);
+	background: var(--surface-muted);
+	color: var(--muted-text-color);
+	font-size: 0.72rem;
+	line-height: 1.4;
+}
+
+.typing-note {
+	display: block;
+	margin-top: 0.3rem;
+	color: var(--muted-text-color);
+	font-size: 0.72rem;
+}
 
 .typing {
 	display: inline-flex;

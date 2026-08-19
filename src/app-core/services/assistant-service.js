@@ -16,14 +16,30 @@ const toHistory = (messages) =>
 		.map(({ role, content }) => ({ role, content: content.slice(0, MAX_CONTENT_LENGTH) }));
 
 const assistantService = {
-	/** Send a turn. Resolves to { reply, pendingAction, link, toolsUsed }. */
-	sendMessage: (message, messages = []) => api.post('/assistant/chat', { message, history: toHistory(messages) }),
+	/**
+	 * Which model backends are usable right now. The local one is probed by the API, so a
+	 * model that is configured but not running comes back unavailable rather than being
+	 * offered and then failing on the first question.
+	 */
+	getProviders: () => api.get('/assistant/providers'),
+
+	/**
+	 * Send a turn. Resolves to { reply, pendingAction, link, toolsUsed, provider, providerNotice }.
+	 * `provider` is the backend that actually answered, which is not always the one asked
+	 * for — the API falls back to the local model when the cloud allowance runs out.
+	 */
+	sendMessage: (message, messages = [], provider) =>
+		api.post('/assistant/chat', { message, history: toHistory(messages), provider }),
 
 	/**
 	 * Approve a write the assistant proposed. This is the only call that changes data —
 	 * the chat endpoint can read, but it can never write without this confirmation.
+	 *
+	 * The provider travels with the confirmation so the outcome is narrated by whichever
+	 * backend proposed the card.
 	 */
-	confirmAction: (action, messages = []) => api.post('/assistant/confirm', { action, history: toHistory(messages) }),
+	confirmAction: (action, messages = [], provider) =>
+		api.post('/assistant/confirm', { action, history: toHistory(messages), provider }),
 };
 
 export default assistantService;

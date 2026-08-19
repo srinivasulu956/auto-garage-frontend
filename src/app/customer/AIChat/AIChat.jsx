@@ -6,7 +6,11 @@ import MessageContent from './message-content';
 import './AIChat.scss';
 
 const STORAGE_KEY = 'autofix-assistant-transcript';
+const PROVIDER_KEY = 'autofix-assistant-provider';
 const MAX_STORED_MESSAGES = 40;
+
+/** Short badge text per backend; the API sends the enum name. */
+const PROVIDER_LABELS = { Cloud: 'Cloud', Local: 'Local' };
 
 const SUGGESTIONS = [
 	'My brakes are squealing when I stop',
@@ -55,6 +59,10 @@ const AIChat = () => {
 	const [input, setInput] = useState('');
 	const [busy, setBusy] = useState(false);
 	const [error, setError] = useState(null);
+	const [providers, setProviders] = useState([]);
+	// Remembered across sessions: someone who switched to the local model because the
+	// cloud quota died should not have to switch again on their next visit.
+	const [provider, setProvider] = useState(() => localStorage.getItem(PROVIDER_KEY) || null);
 
 	const scrollAnchorRef = useRef(null);
 	const inputRef = useRef(null);
@@ -80,6 +88,41 @@ const AIChat = () => {
 	useEffect(() => {
 		if (isOpen) inputRef.current?.focus();
 	}, [isOpen]);
+
+	// Asked for once, when the panel is first opened rather than on every customer page
+	// load — probing a local model costs a round trip that most visits never need.
+	useEffect(() => {
+		if (!isOpen || providers.length > 0) return;
+
+		let cancelled = false;
+
+		assistantService
+			.getProviders()
+			.then((response) => {
+				if (cancelled) return;
+
+				setProviders(response.providers ?? []);
+
+				// Fall back to the server's default when nothing is remembered, or when what
+				// was remembered is no longer available — Ollama may simply not be running.
+				setProvider((current) => {
+					const usable = (response.providers ?? []).find((p) => p.id === current && p.available);
+					return usable ? current : response.default;
+				});
+			})
+			.catch(() => {
+				// The toggle is a convenience. If this fails the chat still works on the
+				// server's default, so it stays hidden rather than showing an error.
+			});
+
+		return () => {
+			cancelled = true;
+		};
+	}, [isOpen, providers.length]);
+
+	useEffect(() => {
+		if (provider) localStorage.setItem(PROVIDER_KEY, provider);
+	}, [provider]);
 
 	useEffect(() => {
 		if (!isOpen) return undefined;
@@ -107,7 +150,7 @@ const AIChat = () => {
 			setError(null);
 
 			try {
-				const response = await assistantService.sendMessage(text, history);
+				const response = await assistantService.sendMessage(text, history, provider);
 
 				retryRef.current = null;
 				appendMessage({
@@ -117,7 +160,14 @@ const AIChat = () => {
 					link: response.link ?? null,
 					toolsUsed: response.toolsUsed ?? [],
 					actionState: response.pendingAction ? 'pending' : null,
+					provider: response.provider ?? null,
+					providerNotice: response.providerNotice ?? null,
 				});
+
+				// The server may have answered on a different backend than the one asked for.
+				// Move the toggle to match, so the next question does not walk into the same
+				// exhausted quota and pay for the fallback all over again.
+				if (response.provider && response.provider !== provider) setProvider(response.provider);
 			} catch (err) {
 				retryRef.current = { text, history };
 				setError(err.message || 'Something went wrong. Please try again.');
@@ -125,7 +175,7 @@ const AIChat = () => {
 				setBusy(false);
 			}
 		},
-		[appendMessage],
+		[appendMessage, provider],
 	);
 
 	const sendMessage = useCallback(
@@ -160,7 +210,7 @@ const AIChat = () => {
 			setActionState(messageId, 'working');
 
 			try {
-				const response = await assistantService.confirmAction(action, history);
+				const response = await assistantService.confirmAction(action, history, provider);
 
 				// A confirmed action can still fail re-validation, and the API answers 200
 				// either way — so the card follows actionStatus, not the absence of an error.
@@ -174,7 +224,7 @@ const AIChat = () => {
 				setBusy(false);
 			}
 		},
-		[appendMessage, busy, setActionState],
+		[appendMessage, busy, provider, setActionState],
 	);
 
 	const declineAction = useCallback(
@@ -278,6 +328,31 @@ const AIChat = () => {
 							</div>
 						</div>
 
+						{/* Only worth showing once there is a real choice — one usable backend is
+						    not a switch, it is a label. */}
+						{providers.filter((p) => p.available).length > 1 && (
+							<div className="provider-switch" role="group" aria-label="AI model">
+								{providers.map((option) => (
+									<button
+										type="button"
+										key={option.id}
+										className={`provider-option ${provider === option.id ? 'is-active' : ''}`}
+										// Switching mid-request would mean the reply arrives labelled
+										// with a backend that did not produce it.
+										disabled={busy || !option.available}
+										onClick={() => setProvider(option.id)}
+										title={
+											option.available
+												? `${option.model} — ${option.hint}`
+												: `${option.label} is not running right now`
+										}
+									>
+										{PROVIDER_LABELS[option.id] ?? option.label}
+									</button>
+								))}
+							</div>
+						)}
+
 						<div className="header-actions">
 							{messages.length > 0 && (
 								<button
@@ -330,11 +405,20 @@ const AIChat = () => {
 									)}
 								</div>
 
-								{message.role === 'assistant' && message.toolsUsed?.length > 0 && (
+								{/* A fallback happens without anyone asking for it, so it is said out
+								    loud rather than left for the badge to imply. */}
+								{message.providerNotice && <p className="provider-notice">{message.providerNotice}</p>}
+
+								{message.role === 'assistant' && (message.toolsUsed?.length > 0 || message.provider) && (
 									<ul className="tool-trace">
-										{message.toolsUsed.map((tool) => (
+										{message.toolsUsed?.map((tool) => (
 											<li key={tool}>{TOOL_LABELS[tool] ?? tool.replaceAll('_', ' ')}</li>
 										))}
+										{message.provider && (
+											<li className={`provider-tag ${message.provider.toLowerCase()}`}>
+												{PROVIDER_LABELS[message.provider] ?? message.provider} AI
+											</li>
+										)}
 									</ul>
 								)}
 							</article>
@@ -348,6 +432,10 @@ const AIChat = () => {
 										<span />
 										<span />
 									</span>
+
+									{/* A local model can take the better part of a minute. Silence for
+									    that long reads as a hang, so say what is happening. */}
+									{provider === 'Local' && <span className="typing-note">Thinking locally — this can take a moment…</span>}
 								</div>
 							</article>
 						)}

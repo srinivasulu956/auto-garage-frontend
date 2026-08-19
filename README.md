@@ -26,6 +26,8 @@ It runs entirely server-side using **LLM tool calling**, and it is deliberately 
 - It **cannot write anything** without an explicit human confirmation click
 - It **cannot take payments** or advance a booking past _Pending_
 
+It also runs on **two model backends**: a hosted one (Groq) and a local one (Ollama), switchable from the chat window. When the cloud allowance runs out mid-conversation, the answer falls back to the local model instead of failing — and says so.
+
 → **[Read the AI implementation guide](docs/05-ai-assistant.md)**
 
 ---
@@ -40,7 +42,7 @@ Full documentation lives in [`docs/`](docs/README.md).
 | [Architecture](docs/02-architecture.md)         | System design, auth flow, data model, key trade-offs      |
 | [Backend Guide](docs/03-backend.md)             | .NET structure, layering, full API reference              |
 | [Frontend Guide](docs/04-frontend.md)           | React structure, routing, state, theming                  |
-| [**AI Assistant**](docs/05-ai-assistant.md)     | **Tool calling, safety design, real debugging stories**   |
+| [**AI Assistant**](docs/05-ai-assistant.md)     | **Tool calling, cloud/local providers, safety design, real debugging stories** |
 | [Setup & Run](docs/06-setup-and-run.md)         | Running it on a fresh machine                             |
 
 <!-- | [KT Guide](docs/07-KT-guide.md) | Talking points and honest weaknesses | -->

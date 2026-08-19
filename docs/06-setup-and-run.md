@@ -12,6 +12,7 @@ Getting AutoFix running on a clean machine.
 | Node.js            | 20+                        | `node --version`   |
 | SQL Server         | 2019+ or LocalDB / Express |                    |
 | An AI provider key | Groq (free tier) or OpenAI |                    |
+| Ollama _(optional)_ | For the local AI model     | `ollama --version` |
 
 ---
 
@@ -37,14 +38,18 @@ Create `appsettings.Development.json` — **this file is gitignored and must nev
 		"Audience": "https://localhost:7224/",
 	},
 	"Assistant": {
-		"BaseUrl": "https://api.groq.com/openai/v1",
-		"Model": "openai/gpt-oss-120b",
-		"ApiKey": "<your provider key>",
+		"Cloud": {
+			"BaseUrl": "https://api.groq.com/openai/v1",
+			"Model": "openai/gpt-oss-120b",
+			"ApiKey": "<your provider key>",
+		},
 	},
 }
 ```
 
 > The JWT key signs every token — treat it like a password. HS256 needs at least 256 bits, so use 32+ characters.
+
+The `Local` provider needs no entry here — its defaults in `appsettings.json` already point at Ollama on `localhost:11434`, and a local endpoint has no API key.
 
 ### Create the databases
 
@@ -74,7 +79,29 @@ The API listens on `https://localhost:7224`, and Swagger is at `https://localhos
 
 ---
 
-## 3. Frontend
+## 3. The local AI model (optional)
+
+The assistant can answer on a model running on your own machine instead of Groq. It is slower and less capable, but free, private, and immune to the daily quota. Skip this and everything still works — the toggle simply will not appear.
+
+Install [Ollama](https://ollama.com/download), then:
+
+```bash
+ollama pull llama3.2:3b
+```
+
+~2GB. Verify it is serving the OpenAI-compatible endpoint the backend expects:
+
+```bash
+curl http://localhost:11434/v1/models
+```
+
+> **Use a model trained for tool calling.** `llama3.2:3b` returns a proper `tool_calls` array. A same-size coding model such as `qwen2.5-coder:3b` prints the tool call as plain text instead, which the assistant would show the customer as raw JSON. → [05 §8.5](05-ai-assistant.md#85-3b-is-not-a-specification)
+
+Change the model in `appsettings.json` under `Assistant:Local:Model`. Larger models call tools more reliably but need more VRAM — `llama3.2:3b` fits comfortably in 4GB.
+
+---
+
+## 4. Frontend
 
 ```bash
 cd AutoFix
@@ -108,7 +135,7 @@ This exists for a specific reason: it makes API calls look **same-origin** to th
 
 ---
 
-## 4. First run
+## 5. First run
 
 1. **Register a customer** at `/login` — self-registration creates a Customer.
 2. **Create an Admin.** There is no admin self-registration; `POST /api/auth/register-staff` requires an existing Admin. Bootstrap the first one by inserting a row into the `AspNetUserRoles` table of `AutoGarageAuth`, or by temporarily relaxing the `[Authorize]` on that endpoint (and putting it back).
@@ -119,7 +146,7 @@ This exists for a specific reason: it makes API calls look **same-origin** to th
 
 ---
 
-## 5. Common problems
+## 6. Common problems
 
 **CORS errors in the browser**
 The `AllowFrontend` policy in `Program.cs` must list your frontend origin, and `AllowCredentials` must be on — without it the refresh cookie is silently dropped.
@@ -134,14 +161,23 @@ Pass `--context` explicitly, as shown above.
 Check `Logs/error-<date>.txt` — the provider's real error is logged there, never sent to the browser. The usual causes are a missing or revoked key, or a rate limit.
 
 **The assistant returns 429**
-Quota exhausted. Groq's free tier limits are per model _and_ per day, so switching model gives a fresh allowance immediately. → [05 §8.3](05-ai-assistant.md#83-rate-limits-and-a-retry-that-made-things-worse)
+Cloud quota exhausted. Groq's free tier limits are per model _and_ per day, so switching model gives a fresh allowance immediately. With Ollama installed the assistant falls back to the local model instead of failing. → [05 §8.3](05-ai-assistant.md#83-rate-limits-and-a-retry-that-made-things-worse)
+
+**The Cloud / Local toggle does not appear**
+It only shows when more than one provider is actually reachable. Check `ollama list` shows the model named in `Assistant:Local:Model`, and that `curl http://localhost:11434/v1/models` answers. `GET /api/assistant/providers` reports what the backend can see.
+
+**The local model replies with raw JSON instead of doing anything**
+The model is emitting tool calls as text rather than a `tool_calls` array — it has no tool-calling chat template. Use `llama3.2:3b` rather than a coding model of the same size. → [05 §8.5](05-ai-assistant.md#85-3b-is-not-a-specification)
+
+**The local model times out**
+`Assistant:Local:TimeoutSeconds` defaults to 180. A booking can take several model round trips, and a model that does not fit in VRAM spills to CPU and slows by an order of magnitude. Check with `ollama ps` — `100% GPU` is what you want.
 
 **Port already in use**
 The API port is in `Properties/launchSettings.json`. If you change it, update `VITE_API_BASE_URL` and the CORS policy to match.
 
 ---
 
-## 6. Building for production
+## 7. Building for production
 
 ```bash
 npm run build                      # frontend → dist/

@@ -18,7 +18,7 @@ From `Auto-Garage.csproj`:
 | `Swashbuckle.AspNetCore`                                              | 10.1.7         | Swagger UI                     |
 | `Microsoft.AspNetCore.OpenApi` / `Microsoft.OpenApi`                  | 10.0.7 / 2.7.5 | OpenAPI                        |
 
-`Nullable` and `ImplicitUsings` are both enabled. **No AI SDK** — the assistant talks HTTP to an OpenAI-compatible endpoint. → [05 §7](05-ai-assistant.md#7-provider-independence)
+`Nullable` and `ImplicitUsings` are both enabled. **No AI SDK** — the assistant talks HTTP to an OpenAI-compatible endpoint, which is what lets one client class serve both a hosted model and a local one. → [05 §7](05-ai-assistant.md#7-two-providers-cloud-and-local)
 
 ---
 
@@ -54,7 +54,7 @@ Read this file first when picking the project up. In order, it:
 2. Registers controllers, endpoint explorer and **Swagger**
 3. Registers **both DbContexts** against their connection strings
 4. Registers **8 repositories** and **7 business services** as `Scoped`
-5. Registers the **AI assistant** — options binding, a typed `HttpClient`, the tool executor and the service
+5. Registers the **AI assistant** — options binding, a named `HttpClient` per model provider, the client factory, the tool executor and the service
 6. Configures **Identity Core** with password rules and role support
 7. Configures **JWT bearer** validation (issuer, audience, signing key)
 8. Adds authorization and the **CORS** policy `AllowFrontend` (credentials enabled)
@@ -66,18 +66,31 @@ Read this file first when picking the project up. In order, it:
 The AI registration is the only interesting one:
 
 ```csharp
-builder.Services.AddHttpClient<IChatCompletionClient, OpenAiCompatibleChatClient>((provider, client) =>
+static void ConfigureAssistantClient(
+    IServiceProvider provider, HttpClient client, AssistantProvider which)
 {
-    var assistantOptions = provider
-        .GetRequiredService<IOptions<AssistantOptions>>().Value;
+    var settings = provider
+        .GetRequiredService<IOptions<AssistantOptions>>().Value.For(which);
 
     // Trailing slash matters: relative request URIs are resolved against it.
-    client.BaseAddress = new Uri(assistantOptions.BaseUrl.TrimEnd('/') + "/");
-    client.Timeout = TimeSpan.FromSeconds(assistantOptions.TimeoutSeconds);
-});
+    client.BaseAddress = new Uri(settings.BaseUrl.TrimEnd('/') + "/");
+    client.Timeout = TimeSpan.FromSeconds(settings.TimeoutSeconds);
+}
+
+builder.Services.AddHttpClient(ChatCompletionClientFactory.CloudClient,
+    (p, c) => ConfigureAssistantClient(p, c, AssistantProvider.Cloud));
+
+builder.Services.AddHttpClient(ChatCompletionClientFactory.LocalClient,
+    (p, c) => ConfigureAssistantClient(p, c, AssistantProvider.Local));
+
+builder.Services.AddSingleton<IChatCompletionClientFactory, ChatCompletionClientFactory>();
 ```
 
-A **typed HttpClient** rather than `new HttpClient()` — so `IHttpClientFactory` owns connection pooling and socket lifetime. Creating `HttpClient` per request exhausts sockets; a static one misses DNS changes. This is a small detail developers do ask about.
+Two points worth knowing:
+
+**Named `HttpClient`s rather than `new HttpClient()`** — so `IHttpClientFactory` owns connection pooling and socket lifetime. Creating `HttpClient` per request exhausts sockets; a static one misses DNS changes. This is a small detail developers do ask about.
+
+**Two registrations, one client class.** Groq and Ollama speak the same `/chat/completions` contract, so they differ only in base address and timeout. The factory picks between them per request, because the choice arrives with the request. → [05 §7](05-ai-assistant.md#7-two-providers-cloud-and-local)
 
 ---
 
@@ -224,10 +237,11 @@ Controller-level: `[Authorize(Roles = "Mechanic")]`
 
 Controller-level: `[Authorize(Roles = "Customer")]`
 
-| Method | Path       | Purpose                                              |
-| ------ | ---------- | ---------------------------------------------------- |
-| POST   | `/chat`    | Send a message — **can read, never writes**          |
-| POST   | `/confirm` | Execute a confirmed action — **the only write path** |
+| Method | Path         | Purpose                                                       |
+| ------ | ------------ | ------------------------------------------------------------- |
+| POST   | `/chat`      | Send a message — **can read, never writes**                   |
+| POST   | `/confirm`   | Execute a confirmed action — **the only write path**          |
+| GET    | `/providers` | Which model backends are reachable, for the chat-window toggle |
 
 → [05](05-ai-assistant.md)
 
